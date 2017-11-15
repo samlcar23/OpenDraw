@@ -25,6 +25,7 @@ public class Client {
 		this.port = port;
 		this.gui = gui;
 	}
+	
 
 	/*
 	 * start

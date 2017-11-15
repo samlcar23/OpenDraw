@@ -290,6 +290,7 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 			// TODO Auto-generated method stub
 			
 		}
+		
 
 		@Override
 		public void sorterChanged(RowSorterEvent arg0) {
