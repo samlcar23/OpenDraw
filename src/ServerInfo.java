@@ -43,4 +43,5 @@ public class ServerInfo implements Serializable {
 	public ServerInfo getServerInfo() {
 		return this;
 	}
+	
 }

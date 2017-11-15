@@ -283,6 +283,7 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 				}
 			}
 		}
+		
 
 		@Override
 		public void mouseReleased(final MouseEvent e) {
