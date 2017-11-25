@@ -10,18 +10,16 @@ public class Client {
 	private Socket socket;
 	
 	//Client GUI
-	private ClientGUI gui;
+	private ServerListGUI gui;
 	
 	private String server;
-	private String username;
 	private int port;
 	
 	/*
 	 * constructor
 	 */
-	public Client(String server, String username, int port, ClientGUI gui) {
+	public Client(String server, int port, ServerListGUI gui) {
 		this.server = server;
-		this.username = username;
 		this.port = port;
 		this.gui = gui;
 	}
@@ -111,19 +109,16 @@ public class Client {
 	public static void main(String[] args) {
 		int portNum = 5335;
 		String serverAdd = "localhost";
-		String user = "sam";
-		ClientGUI mm = new ClientGUI(serverAdd, portNum);
+		ServerListGUI gui = new ServerListGUI(serverAdd, portNum);
 		
 		//create client
-		Client client = new Client(serverAdd, user, portNum, mm);
+		Client client = new Client(serverAdd, portNum, gui);
+		
+		gui.start(client);
 		
 		if(!client.start()) {
 			return;
 		}
-		
-//		while(true) {
-//			
-//		}
 	}
 	
 	/*

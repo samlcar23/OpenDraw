@@ -217,7 +217,6 @@ public class Server {
 			// write the message to the stream
 			try {
 				out.writeObject(server);
-				//out.close();
 			}
 			// if an error occurs, do not abort just inform the user
 			catch(IOException e) {

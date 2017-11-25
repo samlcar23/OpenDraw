@@ -6,6 +6,9 @@ import java.awt.Insets;
 import java.awt.List;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -28,7 +31,7 @@ import javax.swing.table.TableRowSorter;
  * @author Sam Carson
  *
  */
-public class ClientGUI extends JFrame implements MouseListener, RowSorterListener {
+public class ServerListGUI extends JFrame implements MouseListener, RowSorterListener {
 	
 		/**
 		 * 
@@ -83,7 +86,7 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 		 * @param server 
 		 * @param mode the current mode to be played
 		 */
-		public ClientGUI(String server, int port) {
+		public ServerListGUI(String server, int port) {
 			//setup the frame
 			this.setTitle("Multiplayer Menu");
 			this.setSize(1200, 700);
@@ -138,7 +141,6 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 			this.add(panel);
 			this.setVisible(true);
 			
-			start();
 			
 		}
 		
@@ -187,16 +189,13 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 			}
 
 			model.addRow(new Object[] {
-					serverList.get(serverList.size() - 1).getName(), isPrivate});
+					serverList.get(serverList.size() - 1).getName() + " " + 
+							serverList.get(serverList.size() - 1).getIP(), isPrivate});
 			
 		}
 		
-		public void start() {
-			client = new Client(server, "sam", port, this);
-			
-			// test if we can start the Client
-			if(!client.start()) 
-				return;
+		public void start(Client c) {
+			client = c;
 		}
 		
 		/*
@@ -226,6 +225,20 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 		@Override
 		public void mousePressed(final MouseEvent e) {
 			
+			//get ip address of server creator
+			String ip = "";
+			try {
+				URL whatismyip = new URL("http://checkip.amazonaws.com");
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						whatismyip.openStream()));
+
+				ip = in.readLine(); 
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			System.out.println(ip);
+			
+			
 			//creating server and putting in server table
 			if (e.getSource() == btnCreateServer) {
 				JTextField name = new JTextField();
@@ -243,9 +256,7 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 					serverName = name.getText();
 					serverPassword = password.getText();
 					ServerInfo server = new ServerInfo(
-							serverName, serverPassword, null);
-					
-					//append(server);
+							serverName, serverPassword, ip);
 					
 					//send to server via client
 					client.sendServerInfo(server);
@@ -279,6 +290,10 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 						System.out.println("Joining " 
 							+ serverList.get(row)
 							.getName());
+						
+						//connect 2nd player to host
+						String ipToConnect = serverList.get(row).getIP();
+						
 					}
 				}
 			}
@@ -296,13 +311,5 @@ public class ClientGUI extends JFrame implements MouseListener, RowSorterListene
 		public void sorterChanged(RowSorterEvent arg0) {
 			// TODO Auto-generated method stub
 			
-		}
-		
-		/**
-		 * run client
-		 * @param args
-		 */
-		public static void main(String[] args) {
-			new ClientGUI("localhost", 5335);
 		}
 }
