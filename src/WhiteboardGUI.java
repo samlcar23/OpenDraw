@@ -65,40 +65,6 @@ public class WhiteboardGUI extends JComponent {
 		
 		scale = 10;
 
-		this.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				clickX = e.getX();
-				clickY = e.getY();
-
-				dragX = e.getX();
-				dragY = e.getY();
-
-				if (graphics2D != null) {
-					graphics2D.setColor(color);
-					draw(clickX, clickY, dragX, dragY, shape);
-				}
-
-				update();
-			}
-		});
-
-		this.addMouseMotionListener(new MouseMotionAdapter() {
-			public void mouseDragged(MouseEvent e) {
-				dragX = e.getX();
-				dragY = e.getY();
-
-				if (graphics2D != null) {
-					graphics2D.setColor(color);
-					draw(clickX, clickY, dragX, dragY, shape);
-				}
-
-				update();
-
-				clickX = dragX;
-				clickY = dragY;
-			}
-		});
-
 		JFrame frame = new JFrame();
 
 		JPanel buttonPanel = new JPanel();
@@ -141,12 +107,45 @@ public class WhiteboardGUI extends JComponent {
 		frame.setSize(1000, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		
+		this.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				clickX = e.getX();
+				clickY = e.getY();
+
+				dragX = e.getX();
+				dragY = e.getY();
+
+				if (graphics2D != null) {
+					draw(clickX, clickY, dragX, dragY, shape);
+				}
+
+				update();
+			}
+		});
+
+		this.addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseDragged(MouseEvent e) {
+				dragX = e.getX();
+				dragY = e.getY();
+
+				if (graphics2D != null) {
+					draw(clickX, clickY, dragX, dragY, shape);
+				}
+
+				update();
+
+				clickX = dragX;
+				clickY = dragY;
+			}
+		});
 
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				graphics2D.setPaint(Color.white);
 				graphics2D.fillRect(0, 0, getSize().width, getSize().height);
 				graphics2D.setPaint(Color.black);
+				
 				update();
 			}
 		});
@@ -155,28 +154,24 @@ public class WhiteboardGUI extends JComponent {
 			public void actionPerformed(ActionEvent e) {
 				color = JColorChooser.showDialog(frame, "Choose a color", color);
 				graphics2D.setColor(color);
-				update();
 			}
 		});
 
 		circleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "circle";
-				update();
 			}
 		});
 
 		squareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "square";
-				update();
 			}
 		});
 
 		lineButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "line";
-				update();
 			}
 		});
 
@@ -187,8 +182,6 @@ public class WhiteboardGUI extends JComponent {
 				if (shape.equals(null) == true) {
 					shape = "line";
 				}
-				
-				update();
 			}
 		});
 
@@ -229,7 +222,7 @@ public class WhiteboardGUI extends JComponent {
 			graphics2D.fillRect(cX - scale/2, cY - scale/2, scale, scale);
 		} else if (shape.equals(null) == false) {
 			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
-			graphics2D.drawString(shape, cX - scale/2, cY - scale/2);
+			graphics2D.drawString(shape, cX - shape.length() * 2, cY);
 		}
 	}
 	
