@@ -41,7 +41,6 @@ public class WhiteboardGUI extends JComponent {
 
 	private int SCALEMAX = 100;
 
-
 	public Graphics2D getGraphics() {
 		return graphics2D;
 	}
@@ -79,7 +78,7 @@ public class WhiteboardGUI extends JComponent {
 					draw(clickX, clickY, dragX, dragY, shape);
 				}
 
-				repaint();
+				update();
 			}
 		});
 
@@ -93,7 +92,7 @@ public class WhiteboardGUI extends JComponent {
 					draw(clickX, clickY, dragX, dragY, shape);
 				}
 
-				repaint();
+				update();
 
 				clickX = dragX;
 				clickY = dragY;
@@ -148,7 +147,7 @@ public class WhiteboardGUI extends JComponent {
 				graphics2D.setPaint(Color.white);
 				graphics2D.fillRect(0, 0, getSize().width, getSize().height);
 				graphics2D.setPaint(Color.black);
-				repaint();
+				update();
 			}
 		});
 
@@ -156,28 +155,28 @@ public class WhiteboardGUI extends JComponent {
 			public void actionPerformed(ActionEvent e) {
 				color = JColorChooser.showDialog(frame, "Choose a color", color);
 				graphics2D.setColor(color);
-				repaint();
+				update();
 			}
 		});
 
 		circleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "circle";
-				repaint();
+				update();
 			}
 		});
 
 		squareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "square";
-				repaint();
+				update();
 			}
 		});
 
 		lineButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shape = "line";
-				repaint();
+				update();
 			}
 		});
 
@@ -189,7 +188,7 @@ public class WhiteboardGUI extends JComponent {
 					shape = "line";
 				}
 				
-				repaint();
+				update();
 			}
 		});
 
@@ -215,7 +214,7 @@ public class WhiteboardGUI extends JComponent {
 
 			graphics2D.setPaint(Color.black);
 
-			repaint();
+			update();
 		}
 
 		g.drawImage(image, 0, 0, null);
@@ -225,13 +224,29 @@ public class WhiteboardGUI extends JComponent {
 		if (shape.equals("line") == true) {
 			graphics2D.drawLine(oX, oY, cX, cY);
 		} else if (shape.equals("circle") == true) {
-			graphics2D.fillOval(cX, cY, scale, scale);
+			graphics2D.fillOval(cX - scale/2, cY - scale/2, scale, scale);
 		} else if (shape.equals("square") == true) {
-			graphics2D.fillRect(cX, cY, scale, scale);
+			graphics2D.fillRect(cX - scale/2, cY - scale/2, scale, scale);
 		} else if (shape.equals(null) == false) {
 			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
-			graphics2D.drawString(shape, cX, cY);
+			graphics2D.drawString(shape, cX - scale/2, cY - scale/2);
 		}
+	}
+	
+	public void update() {
+		/*
+		 * send change to server
+		 */
+		System.out.println("changes sent");
+		/*
+		 * receive updated graphics
+		 */
+		System.out.println("graphics updated");
+		/*
+		 * update client graphics
+		 */
+		System.out.println("repaint");
+		repaint();
 	}
 
 	public static void main(String[] args) {
