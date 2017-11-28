@@ -2,17 +2,23 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-
+/**
+ * Client for server menu used to communicate with server
+ * @author Sam Carson
+ *
+ */
 public class Client {
 	
 	private ObjectOutputStream out;
+	
 	private ObjectInputStream in;
+	
 	private Socket socket;
 	
-	//Client GUI
 	private ServerListGUI gui;
 	
 	private String server;
+	
 	private int port;
 	
 	/*
@@ -54,16 +60,7 @@ public class Client {
 		//create the Thread to listen from server
 		new ListenFromServer().start();
 		
-//		//try to send username to server
-//		try {
-//			out.writeObject(username);
-//		} catch (IOException eIO) {
-//			eIO.printStackTrace();
-//			disconnect();
-//			return false;
-//		}
-		
-		//success
+		//client start was successful
 		return true;
 		
 	}
@@ -88,15 +85,15 @@ public class Client {
 		try { 
 			if(in!= null) in.close();
 		}
-		catch(Exception e) {} // not much else I can do
+		catch(Exception e) {}
 		try {
 			if(out != null) out.close();
 		}
-		catch(Exception e) {} // not much else I can do
+		catch(Exception e) {}
         try{
 			if(socket != null) socket.close();
 		}
-		catch(Exception e) {} // not much else I can do
+		catch(Exception e) {}
 		
 		// inform the GUI
 		if(gui != null)
@@ -122,16 +119,18 @@ public class Client {
 	}
 	
 	/*
-	 * a class that waits for the message from the server and append them to the JTextArea
-	 * if we have a GUI or simply System.out.println() it in console mode
+	 * a class that waits for the serverInfo object from the server and then adds
+	 * it to the table in the gui.
 	 */
 	class ListenFromServer extends Thread {
 
 		public void run() {
+			
+			//waits for serverInfo objects
 			while(true) {
 				try {
 					ServerInfo server = (ServerInfo) in.readObject();
-					// if console mode print the message and add back the prompt
+					//sends serverInfo to the gui to add to the table
 					gui.append(server);
 				}
 				catch(IOException e) {
@@ -140,7 +139,6 @@ public class Client {
 						gui.connectionFailed();
 					break;
 				}
-				// can't happen with a String object but need the catch anyhow
 				catch(ClassNotFoundException e2) {
 				}
 			}

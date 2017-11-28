@@ -6,9 +6,13 @@ import java.util.*;
 public class Server {
 	
 	private int port;
+	
 	private boolean keepGoing;
+	
 	private static int uniqueId;
+	
 	private ArrayList<ClientThread> clients;
+	
 	private ArrayList<ServerInfo> serverList;
 	
 	/*
@@ -41,18 +45,23 @@ public class Server {
 					break;
 				}
 				
+				//creates thread for client communication
 				ClientThread thread = new ClientThread(socket);
+				
+				//adds the thread to a list of clients
 				clients.add(thread);
+				
+				//starts the thread
 				thread.start();
 			}
-			
-
 			
 			//asked to stop
 			try {
 				serverSocket.close();
 				for(int i = 0; i < clients.size(); i ++) {
 					ClientThread tc = clients.get(i);
+					
+					//close the input stream, output stream, and socket of all clients
 					try {
 						tc.in.close();
 						tc.out.close();
@@ -94,7 +103,7 @@ public class Server {
 		// scan the array list until we found the Id
 		for(int i = 0; i < clients.size(); ++i) {
 			ClientThread ct = clients.get(i);
-			// found it
+			//if client to remove is found
 			if(ct.id == id) {
 				clients.remove(i);
 				return;
@@ -113,34 +122,36 @@ public class Server {
 	}
 	
 	
-	/** One instance of this thread will run for each client */
+	/**
+	 * class for communicating with the client
+	 *
+	 */
 	class ClientThread extends Thread {
-		// the socket where to listen/talk
+		
 		Socket socket;
 		ObjectInputStream in;
 		ObjectOutputStream out;
-		// my unique id (easier for deconnection)
+		
+		//unique id for the client
 		int id;
-		// the Username of the Client
-		//String username;
-		// the only type of message a will receive
+		
+		//serverInfo object that the server receives
 		ServerInfo server;
 		
 
-		// Constructore
+		// Constructor
 		ClientThread(Socket socket) {
 			// a unique id
 			id = ++uniqueId;
 			this.socket = socket;
-			/* Creating both Data Stream */
+			
+			//create the input output streams
 			System.out.println("Thread trying to create Object Input/Output Streams");
 			try
 			{
 				// create output first
 				out= new ObjectOutputStream(socket.getOutputStream());
 				in  = new ObjectInputStream(socket.getInputStream());
-				// read the username
-				//username = (String) in.readObject();
 				System.out.println(" connected");
 				
 			}
@@ -149,7 +160,7 @@ public class Server {
 				return;
 			}
 			
-			//try to send arraylist of servers
+			//try to send arraylist of servers when client connects
 			try {
 				if(serverList != null) {
 					for(ServerInfo server: serverList) {
@@ -164,10 +175,10 @@ public class Server {
 
 		// what will run forever
 		public void run() {
-			// to loop until LOGOUT
+			
 			boolean keepGoing = true;
 			while(keepGoing) {
-				// read a String (which is an object)
+				//Receive serverInfo object from client
 				try {
 					server = (ServerInfo) in.readObject();
 				}
@@ -179,7 +190,10 @@ public class Server {
 					break;
 				}
 				
+				//send serverInfo object to all clients
 				broadcast(server);
+				
+				//add the serverInfo object to the list of servers
 				serverList.add(server);
 			}
 			// remove myself from the arrayList containing the list of the
@@ -206,7 +220,7 @@ public class Server {
 		}
 
 		/*
-		 * Write a server to the Client output stream
+		 * Write a serverInfo object to the Client output stream
 		 */
 		private boolean writeMsg(ServerInfo server) {
 			// if Client is still connected send the message to it
@@ -214,11 +228,10 @@ public class Server {
 				close();
 				return false;
 			}
-			// write the message to the stream
+			// write the serverInfo object to the stream
 			try {
 				out.writeObject(server);
 			}
-			// if an error occurs, do not abort just inform the user
 			catch(IOException e) {
 				e.printStackTrace();
 			}

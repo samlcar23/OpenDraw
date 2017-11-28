@@ -27,7 +27,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
- * Creates the gui menu for multiplayer servers.
+ * Creates the gui menu for the OpenDraw servers
  * @author Sam Carson
  *
  */
@@ -75,9 +75,6 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 */
 		private DefaultTableModel model;
 		
-		private String server;
-		private int port;
-		
 		private Client client;
 		
 		/**
@@ -88,12 +85,10 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 */
 		public ServerListGUI(String server, int port) {
 			//setup the frame
-			this.setTitle("Multiplayer Menu");
+			this.setTitle("Server Menu");
 			this.setSize(1200, 700);
 			this.setResizable(false);
-			
-			this.server = server;
-			this.port = port;
+
 			
 			//create panel
 			JPanel panel = new JPanel();
@@ -103,26 +98,25 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 			
 			
 			
-			//Create server table
+			//Create server table model
 			model = new DefaultTableModel(0, columns.length);
 			model.setColumnIdentifiers(columns);
 			
+			//set table to the model
 			table = new JTable(model);
 			
+			//make the table scrollable
 			JScrollPane scroller = new JScrollPane(table);
 			table.setFillsViewportHeight(true);
-			
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			addItem(panel, scroller, 1, 0, 1, 2, GridBagConstraints.BOTH);
 			
 			//TODO also sort arraylist to match
-			TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-			table.setRowSorter(sorter);
+//			TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+//			table.setRowSorter(sorter);
+//			
+//			sorter.addRowSorterListener(this);
 			
-			sorter.addRowSorterListener(this);
-			
-			
-			
-			addItem(panel, scroller, 1, 0, 1, 2, GridBagConstraints.BOTH);
 			
 			//make create server button
 			btnCreateServer = new JButton();
@@ -178,8 +172,11 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 * add server to table
 		 */
 		public void append(ServerInfo server) {
+			
+			//adds server to the list of servers
 			serverList.add(server);
 			
+			//determines if the server is private
 			String isPrivate = "";
 			if (serverList.get(serverList.size() - 1)
 					.getPassword().length() > 0) {
@@ -187,13 +184,20 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 			} else {
 				isPrivate = "No";
 			}
-
+			
+			//adds server to the table
 			model.addRow(new Object[] {
 					serverList.get(serverList.size() - 1).getName() + " " + 
 							serverList.get(serverList.size() - 1).getIP(), isPrivate});
 			
 		}
 		
+		
+		/**
+		 * Sets the client
+		 * 
+		 * @param c Client
+		 */
 		public void start(Client c) {
 			client = c;
 		}
@@ -205,6 +209,107 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 			
 		}
 
+
+		@Override
+		public void mousePressed(final MouseEvent e) {
+			
+			
+			
+			//Create server button is pressed
+			if (e.getSource() == btnCreateServer) {
+				
+				//get ip address of server creator
+				String ip = "";
+				try {
+					URL whatismyip = new URL("http://checkip.amazonaws.com");
+					BufferedReader in = new BufferedReader(new InputStreamReader(
+							whatismyip.openStream()));
+
+					ip = in.readLine(); 
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				System.out.println(ip);
+				
+				//create text fields
+				JTextField name = new JTextField();
+				JTextField password = new JTextField();
+				
+				//create message for optionpane
+				Object[] message = {"Server Name: ", name,
+						"Password (Optional): ", password
+				};
+				
+				//open optionpane and set result to n
+				int n = JOptionPane.showConfirmDialog(null,
+						message, "Create Server", 
+						JOptionPane.OK_CANCEL_OPTION);
+				System.out.println("Create Button pressed");
+				
+				//create serverInfo object if OK is pressed
+				if (n == JOptionPane.OK_OPTION) {
+					serverName = name.getText();
+					serverPassword = password.getText();
+					ServerInfo server = new ServerInfo(
+							serverName, serverPassword, ip);
+					
+					//send to server via client
+					client.sendServerInfo(server);
+				}
+				
+			}
+			
+			//join server button is pressed
+			if (e.getSource() == btnJoinServer) {
+				if (table.getSelectedRow() != -1) {
+					int row = table.getSelectedRow();
+					
+					//if server is password protected prompt user for the password
+					if (serverList.get(row).getPassword().length() > 0) {
+						
+						JTextField password = new JTextField();
+						Object[] message = 
+							{"Enter Server Password: ", password};
+			
+						int n = JOptionPane.showConfirmDialog(null, message,
+								"Password", JOptionPane.OK_CANCEL_OPTION);
+						if (n == JOptionPane.OK_OPTION) {
+							String pass = password.getText();
+							if (pass.equals(serverList.get(row).getPassword())) {
+								
+								System.out.println("Joining server " 
+										+ serverList.get(row).getName());
+								
+								//connect user to host
+								String ipToConnect = serverList.get(row).getIP();
+								
+								//Join server
+								//TODO create client object to communicate with server
+								
+								
+							} else {
+								System.out.println("incorrect password");
+							}
+						}
+						
+					} else {
+						System.out.println("Joining " 
+							+ serverList.get(row)
+							.getName());
+						
+						//connect user to host
+						String ipToConnect = serverList.get(row).getIP();
+						
+						//Join server
+						//TODO create client object to communicate with server
+						
+						
+						
+					}
+				}
+			}
+		}
+		
 		@Override
 		public void mouseClicked(final MouseEvent e) {
 			
@@ -220,83 +325,6 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		public void mouseExited(final MouseEvent e) {
 			// TODO Auto-generated method stub
 			
-		}
-
-		@Override
-		public void mousePressed(final MouseEvent e) {
-			
-			//get ip address of server creator
-			String ip = "";
-			try {
-				URL whatismyip = new URL("http://checkip.amazonaws.com");
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						whatismyip.openStream()));
-
-				ip = in.readLine(); 
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			System.out.println(ip);
-			
-			
-			//creating server and putting in server table
-			if (e.getSource() == btnCreateServer) {
-				JTextField name = new JTextField();
-				JTextField password = new JTextField();
-				Object[] message = {"Server Name: ", name,
-						"Password (Optional): ", password
-				};
-				
-				int n = JOptionPane.showConfirmDialog(null,
-						message, "Create Server", 
-						JOptionPane.OK_CANCEL_OPTION);
-				System.out.println("Create Button pressed");
-				
-				if (n == JOptionPane.OK_OPTION) {
-					serverName = name.getText();
-					serverPassword = password.getText();
-					ServerInfo server = new ServerInfo(
-							serverName, serverPassword, ip);
-					
-					//send to server via client
-					client.sendServerInfo(server);
-				}
-				
-			}
-			
-			//joining server
-			if (e.getSource() == btnJoinServer) {
-				if (table.getSelectedRow() != -1) {
-					int row = table.getSelectedRow();
-					if (serverList.get(row).getPassword().length() > 0) {
-						
-						JTextField password = new JTextField();
-						Object[] message = 
-							{"Enter Server Password: ", password};
-			
-						int n = JOptionPane.showConfirmDialog(null, message,
-								"Password", JOptionPane.OK_CANCEL_OPTION);
-						if (n == JOptionPane.OK_OPTION) {
-							String pass = password.getText();
-							if (pass.equals(serverList.get(row).getPassword())) {
-								
-								System.out.println("Joining server " 
-										+ serverList.get(row).getName());
-							} else {
-								System.out.println("incorrect password");
-							}
-						}
-					} else {
-						System.out.println("Joining " 
-							+ serverList.get(row)
-							.getName());
-						
-						//connect 2nd player to host
-						String ipToConnect = serverList.get(row).getIP();
-						
-					}
-				}
-			}
 		}
 		
 
