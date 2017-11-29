@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.awt.List;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -49,6 +50,10 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 * server password.
 		 */
 		private String serverPassword;
+		/**
+		 * server IP
+		 */
+		private String serverIP;
 		/**
 		 * Arraylist of serverInfo.
 		 */
@@ -192,6 +197,18 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 			
 		}
 		
+		/*
+		 * deletes server from table
+		 */
+		public void delete(ServerInfo server){
+			for (ServerInfo s: serverList) {
+				if(s.getIP() == server.getIP()) {
+					model.removeRow(serverList.indexOf(s));
+					serverList.remove(s);
+					break;
+				}
+			}
+		}
 		
 		/**
 		 * Sets the client
@@ -200,6 +217,7 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 */
 		public void start(Client c) {
 			client = c;
+			
 		}
 		
 		/*
@@ -218,18 +236,8 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 			//Create server button is pressed
 			if (e.getSource() == btnCreateServer) {
 				
-				//get ip address of server creator
-				String ip = "";
-				try {
-					URL whatismyip = new URL("http://checkip.amazonaws.com");
-					BufferedReader in = new BufferedReader(new InputStreamReader(
-							whatismyip.openStream()));
-
-					ip = in.readLine(); 
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				System.out.println(ip);
+				
+				serverIP = client.getMyIP();
 				
 				//create text fields
 				JTextField name = new JTextField();
@@ -251,7 +259,7 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 					serverName = name.getText();
 					serverPassword = password.getText();
 					ServerInfo server = new ServerInfo(
-							serverName, serverPassword, ip);
+							serverName, serverPassword, serverIP, 0);
 					
 					//send to server via client
 					client.sendServerInfo(server);
@@ -308,6 +316,17 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 					}
 				}
 			}
+		}
+		
+		@Override
+		protected void processWindowEvent(WindowEvent e) {
+			if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+				//close client
+				client.disconnect();
+				super.processWindowEvent(e);
+			}
+			super.processWindowEvent(e);
+
 		}
 		
 		@Override

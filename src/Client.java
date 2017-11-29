@@ -21,6 +21,8 @@ public class Client {
 	
 	private int port;
 	
+	private String myIP;
+	
 	/*
 	 * constructor
 	 */
@@ -28,6 +30,23 @@ public class Client {
 		this.server = server;
 		this.port = port;
 		this.gui = gui;
+		
+		//get ip of client
+		String ip = "";
+		try {
+			URL whatismyip = new URL("http://checkip.amazonaws.com");
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					whatismyip.openStream()));
+
+			ip = in.readLine(); 
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		//set ip of client
+		myIP = ip;
+		
+		
 	}
 	
 
@@ -77,11 +96,19 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * returns the ip of the client
+	 */
+	public String getMyIP() {
+		return myIP;
+	}
+	
+	
 	/*
 	 * disconnect
 	 * close input/output streams
 	 */
-	private void disconnect() {
+	public void disconnect() {
 		try { 
 			if(in!= null) in.close();
 		}
@@ -96,8 +123,11 @@ public class Client {
 		catch(Exception e) {}
 		
 		// inform the GUI
-		if(gui != null)
+		if(gui != null) {
 			gui.connectionFailed();
+		}
+		
+		System.exit(0);
 	}
 	
 	/*
@@ -105,7 +135,8 @@ public class Client {
 	 */
 	public static void main(String[] args) {
 		int portNum = 5335;
-		String serverAdd = "localhost";
+		//aws ip = 13.58.209.10
+		String serverAdd = "13.58.209.10";
 		ServerListGUI gui = new ServerListGUI(serverAdd, portNum);
 		
 		//create client
@@ -116,6 +147,8 @@ public class Client {
 		if(!client.start()) {
 			return;
 		}
+		
+		
 	}
 	
 	/*
@@ -130,8 +163,20 @@ public class Client {
 			while(true) {
 				try {
 					ServerInfo server = (ServerInfo) in.readObject();
-					//sends serverInfo to the gui to add to the table
-					gui.append(server);
+					
+					System.out.println("Type: " + server.getType());
+					
+					//checks whether to add or delete a server
+					if (server.getType() == 0) {
+						//sends serverInfo to the gui to add to the table
+						gui.append(server);
+					} else {
+						//remove serverInfo from gui
+						gui.delete(server);
+					}
+					
+					
+					
 				}
 				catch(IOException e) {
 					System.out.println("Server has closed the connection: " + e);
@@ -144,10 +189,5 @@ public class Client {
 			}
 		}
 	}
-	
-	
-	
-	
-	
 	
 }

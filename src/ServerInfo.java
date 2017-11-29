@@ -33,6 +33,27 @@ public class ServerInfo implements Serializable {
 	 * returns the IP of the server
 	 */
 	public String getIP() { return IP;}
+	/**
+	 * type, 0 for server, 1 for disconnecting client
+	 */
+	private int type;
+	/**
+	 * returns the type of ServerInfo message
+	 */
+	public int getType() {return type;}
+	/**
+	 * id to link to client
+	 */
+	public int ID;
+	/**
+	 * sets ID
+	 */
+	public void setID(int id) {ID = id;}
+	/**
+	 * returns ID
+	 */
+	public int getID() {return ID;}
+	
 	
 	/**
 	 * constructor 
@@ -40,10 +61,11 @@ public class ServerInfo implements Serializable {
 	 * @param serverPass
 	 * @param IPAddress
 	 */
-	public ServerInfo(String serverName, String serverPass, String IPAddress) {
+	public ServerInfo(String serverName, String serverPass, String IPAddress, int t) {
 		name = serverName;
 		password = serverPass;
 		IP = IPAddress;
+		type = t;
 	}
 	
 	/**

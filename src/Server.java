@@ -96,19 +96,40 @@ public class Server {
 		}
 	}
 	
+	
 	/*
 	 * for a disconnected client
 	 */
 	public void remove(int id) {
+		
 		// scan the array list until we found the Id
 		for(int i = 0; i < clients.size(); ++i) {
 			ClientThread ct = clients.get(i);
 			//if client to remove is found
 			if(ct.id == id) {
 				clients.remove(i);
-				return;
+				System.out.println("client removed from list of clients");
+				//return;
+				break;
 			}
 		}
+		
+		//find and remove server from list if client started one
+		for (ServerInfo s: serverList) {
+			if (s.getID() == id) {
+				serverList.remove(s);
+				System.out.println("server removed from list of servers");
+				
+				//create ServerInfo object with type 1 for deletion
+				ServerInfo server = new ServerInfo(null, null, s.getIP(), 1);
+				
+				//broadcast server deletion to all clients
+				broadcast(server);
+				break;
+			}
+		}
+
+
 	}
 	
 	/*
@@ -181,12 +202,24 @@ public class Server {
 				//Receive serverInfo object from client
 				try {
 					server = (ServerInfo) in.readObject();
+					
+					//links client and client created server by ID
+					server.setID(id);
+					
 				}
 				catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Client disconnected");
+					keepGoing = false;
 					break;				
 				}
 				catch(ClassNotFoundException e2) {
+					break;
+				}
+				
+				//end thread
+				//type is equal to 1 for disconnect
+				if (server.getType() == 1) {
+					keepGoing = false;
 					break;
 				}
 				
