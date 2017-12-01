@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -126,7 +127,7 @@ public class Whiteboard extends Observable {
 		JButton penButton = new JButton("Pen");
 		JButton eraserButton = new JButton("Eraser");
 		JButton styleButton = new JButton("Style");
-		JButton blankButton = new JButton("blank");
+		JButton triangleButton = new JButton("Triangle");
 		JButton stampButton = new JButton("Stamp");
 
 		/*
@@ -188,10 +189,22 @@ public class Whiteboard extends Observable {
 		buttonPanel.add(styleButton);
 		buttonPanel.add(circleButton);
 		buttonPanel.add(squareButton);
-		buttonPanel.add(blankButton);
+		buttonPanel.add(triangleButton);
 		buttonPanel.add(stampButton);
 		buttonPanel.add(colorButton);
 		buttonPanel.add(eraserButton);
+		
+		/*
+		 * add icons to buttons
+		 */
+		penButton.setIcon(new ImageIcon("icons/pen.png"));
+		styleButton.setIcon(new ImageIcon("icons/style.png"));
+		circleButton.setIcon(new ImageIcon("icons/circle.png"));
+		squareButton.setIcon(new ImageIcon("icons/square.png"));
+		triangleButton.setIcon(new ImageIcon("icons/triangle.png"));
+		eraserButton.setIcon(new ImageIcon("icons/eraser.png"));
+		stampButton.setIcon(new ImageIcon("icons/stamp.png"));
+		colorButton.setIcon(new ImageIcon("icons/palette.png"));
 
 		/*
 		 * add the east and east portions to the bottom panel
@@ -362,9 +375,9 @@ public class Whiteboard extends Observable {
 		/*
 		 * UNUSED
 		 */
-		blankButton.addActionListener(new ActionListener() {
+		triangleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				shape = "triangle";
 			}
 		});
 
@@ -382,11 +395,13 @@ public class Whiteboard extends Observable {
 		 */
 		stampButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				shape = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
-						JOptionPane.PLAIN_MESSAGE);
-				if (shape.equals(null) == true) {
+				try {
+					shape = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
+							JOptionPane.PLAIN_MESSAGE);
+				} catch (Exception exception) {
 					shape = "pen";
 				}
+				
 			}
 		});
 		
