@@ -113,8 +113,20 @@ public class DrawSpace extends JComponent {
 				 */
 				graphics2D.drawRect(cX - scale / 2, cY - scale / 2, scale, scale);
 			}
-		} else if (shape.equals("blank") == true) {
-
+		} else if (shape.equals("triangle") == true) {
+			int[] xs = {cX - scale/2, cX + scale/2, cX};
+			int[] ys = {cY + scale/2, cY + scale/2, cY - scale/2};
+			if (filled == true) {
+				/*
+				 * draw a filled triangle
+				 */
+				graphics2D.fillPolygon(xs, ys, 3);
+			} else {
+				/*
+				 * draw a empty triangle
+				 */
+				graphics2D.drawPolygon(xs, ys, 3);
+			}
 		} else if (shape.equals("eraser") == true) {
 			/*
 			 * eraser
@@ -128,7 +140,7 @@ public class DrawSpace extends JComponent {
 			 * stamp cursor
 			 */
 			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
-			graphics2D.drawString(shape, cX - shape.length() * 2, cY);
+			graphics2D.drawString(shape, cX - shape.length() * 2 * (scale/10), cY);
 		}
 	}
 
