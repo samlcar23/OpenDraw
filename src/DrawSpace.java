@@ -41,8 +41,11 @@ public class DrawSpace extends JComponent {
 	}
 	
 	public void draw(int oX, int oY, int cX, int cY, String shape, int scale, boolean filled) {
-		if (shape.equals("line") == true) {
+		if (shape.equals("pen") == true) {
 			graphics2D.drawLine(oX, oY, cX, cY);
+		} else if (shape.equals("style") == true) {
+			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
+			graphics2D.drawString("/", cX, cY);
 		} else if (shape.equals("circle") == true) {
 			if (filled == true) {
 				graphics2D.fillOval(cX - scale/2, cY - scale/2, scale, scale);
@@ -55,6 +58,13 @@ public class DrawSpace extends JComponent {
 			} else {
 				graphics2D.drawRect(cX - scale/2, cY - scale/2, scale, scale);
 			}
+		} else if (shape.equals("blank") == true) {
+			
+		} else if (shape.equals("eraser") == true) {
+			Color prevColor = graphics2D.getColor();
+			graphics2D.setColor(Color.WHITE);
+			graphics2D.fillRect(cX - scale/2, cY - scale/2, scale, scale);
+			graphics2D.setColor(prevColor);
 		} else if (shape.equals(null) == false) {
 			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
 			graphics2D.drawString(shape, cX - shape.length() * 2, cY);
