@@ -197,14 +197,14 @@ public class Whiteboard extends Observable {
 		/*
 		 * add icons to buttons
 		 */
-		penButton.setIcon(new ImageIcon("icons/pen.png"));
-		styleButton.setIcon(new ImageIcon("icons/style.png"));
-		circleButton.setIcon(new ImageIcon("icons/circle.png"));
-		squareButton.setIcon(new ImageIcon("icons/square.png"));
-		triangleButton.setIcon(new ImageIcon("icons/triangle.png"));
-		eraserButton.setIcon(new ImageIcon("icons/eraser.png"));
-		stampButton.setIcon(new ImageIcon("icons/stamp.png"));
-		colorButton.setIcon(new ImageIcon("icons/palette.png"));
+		penButton.setIcon(new ImageIcon("../icons/pen.png"));
+		styleButton.setIcon(new ImageIcon("../icons/style.png"));
+		circleButton.setIcon(new ImageIcon("../icons/circle.png"));
+		squareButton.setIcon(new ImageIcon("../icons/square.png"));
+		triangleButton.setIcon(new ImageIcon("../icons/triangle.png"));
+		eraserButton.setIcon(new ImageIcon("../icons/eraser.png"));
+		stampButton.setIcon(new ImageIcon("../icons/stamp.png"));
+		colorButton.setIcon(new ImageIcon("../icons/palette.png"));
 
 		/*
 		 * add the east and east portions to the bottom panel
