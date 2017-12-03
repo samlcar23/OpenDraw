@@ -1,8 +1,9 @@
-import java.awt.Graphics2D;
+import java.awt.Container;
 import java.awt.image.BufferedImage;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import javax.swing.JComponent;
 
 /**
  * Server responsible for receiving client connections and maintaining the shared drawing canvas
@@ -11,13 +12,18 @@ import java.util.LinkedList;
  */
 public class DrawServer {
 
+	/** The IP address of the registration server */
+	private static String REGISTRY_IP = "13.58.209.10";
+
+	/** The port number of the registration server */
+	private static int REGISTRY_PORT = 5335;
+
 	/** The drawing canvas of the server */
-	private Graphics2D canvas;
+	private JComponent component;
 
 	/** Thread responsible for updating canvas */
 	private DrawThread drawer;
 
-	//TODO What type of queue should this be?
 	/** List of updates for to be drawn on the canvas */
 	private LinkedList<String> updates;
 
@@ -38,13 +44,18 @@ public class DrawServer {
 	*/
 	public DrawServer(int width, int height) {
 		// Create a drawing canvas for the clients to draw on
-		canvas = (new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)).createGraphics();
+//		canvas = (new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)).createGraphics();
+		component = (JComponent)(new Container());
+		component.setSize(width, height);
 
 		// Create a LinkedList of updates to write to the drawing canvas
 		updates = new LinkedList<>();
 
 		// Create DrawThread to maintain drawing canvas
-		drawer = new DrawThread(canvas, updates);
+		drawer = new DrawThread(component, updates);
+
+		// Start drawer to draw updates to canvas
+		drawer.start();
 	
 		// Socket to receive new connections to the server
 		ServerSocket welcomeSocket = null;
@@ -93,7 +104,6 @@ public class DrawServer {
 	* format DrawServer [WIDTH] [HEIGHT]
 	*/
 	public static void main(String[] args) {
-
 		// Parse and launch the appropriate DrawServer configuration
 		if (args.length == 0) {
 			new DrawServer();
@@ -106,7 +116,6 @@ public class DrawServer {
 		}
 
 		System.out.println("Server shutting down");
-
 	}
 
 }
