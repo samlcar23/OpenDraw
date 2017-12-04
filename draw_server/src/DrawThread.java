@@ -161,7 +161,7 @@ public class DrawThread extends Thread {
 				server.setComponent(newComp);
 
 				// Set the drawing canvas this is operating on
-				//TODO component = server.getomponent
+				//TODO component = server.getComponent();
 				component = newComp;
 
 				// Generating the image

@@ -1,46 +1,67 @@
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 
 public class ClientThread extends Thread{
 
-	/** DrawThread responsible for updating server drawing canvas */
-	private DrawThread drawer;
+	/** Parent of this object */
+	private DrawServer server;
 
 	/** Control socket for communicating with the client */
-        private Socket controlSocket;
+       	private Socket controlSocket;
+
+	/** Data socket to handle image transfer */
+	private Socket dataSocket;
 
 	/** Control output stream for sending responses to the client */
         private DataOutputStream outToClient;
 
+	/** Data output stream to send the image */
+	private ByteArrayOutputStream dataToClient;
+
 	/** Control input stream for receiving commands from the client */
         private BufferedReader inFromClient;
 
-	
+	/** This Timer continually sends the image to the client */
+	private Timer sendTimer;
 
 	/**
-	* Creates a new ClientThread objcet with the given control socket and DrawThread
+	* Creates a new ClientThread object with the given control socket and DrawThread
 	*
 	* @param controlSocket The socket that control commands will be send over
-	* @param drawer The thread that will handle drawing any client updates
+	* @param server The parent server of this object
 	*/
-	public ClientThread(Socket controlSocket, DrawThread drawer) {
+	public ClientThread(Socket controlSocket, DrawServer server) {
 		this.controlSocket = controlSocket;
-		this.drawer = drawer;
+		this.server = server;
 
 		try {
 			// Set up control sockets
 			outToClient = new DataOutputStream(controlSocket.getOutputStream());
 			inFromClient = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
+
+			// Notify client of connection
+			outToClient.writeBytes("200 command ok\n");
 		} catch (Exception e) {
 			// Close the connection if communications cannot be established
 			quit();
 		}
+
+		// Create and start send timer
+		sendTimer = new Timer("SendTimer");
+		sendTimer.schedule(new SendImage(), 0, 10);
 	}
 
 	/**
@@ -52,6 +73,12 @@ public class ClientThread extends Thread{
 			if (controlSocket != null) controlSocket.close();
 		} catch (Exception e) {
 			controlSocket = null;
+		}
+
+		try {
+			if (dataSocket != null) dataSocket.close();
+		} catch (Exception e) {
+			dataSocket = null;
 		}
 	}
 
@@ -91,6 +118,57 @@ public class ClientThread extends Thread{
 
 		System.out.println(address + "disconnected\n");
 
+	}
+
+	/**
+	* This inner class provides the task funcionality needed by the Timer.
+	*/
+	private class SendImage extends TimerTask {
+
+		/**
+		* Creates a SendImage extension of TimerTask to pass to the Timer
+		*
+		* @param outToClient The control connection this should send byte count to client over
+		*/
+		public SendImage() {
+			try {
+				// Establish data connection with client
+				dataSocket = new Socket(controlSocket.getInetAddress(), 5340);
+			
+				// Set up data stream
+				dataToClient = (ByteArrayOutputStream)dataSocket.getOutputStream();
+			} catch (Exception e) {
+				// Close the connection if data connection cannot be established
+				quit();
+			}
+		}
+
+		public void run() {
+			// Canvas that the image is loaded from
+			JComponent comp = server.getComponent();
+
+			// Buffer the image to transform into bytes
+			BufferedImage buff = new BufferedImage(comp.getSize().width, comp.getSize().height, BufferedImage.TYPE_INT_RGB);
+
+			// Draw the current image to the buffered image
+			Graphics2D draw = buff.createGraphics();
+			draw.drawImage(comp.createImage(comp.getSize().width, comp.getSize().height), 0, 0, null);
+			draw.dispose();
+
+			// Write the image to the data connection
+			try {
+				// Load image into buffer
+				ImageIO.write(buff, "jpg", dataToClient);
+
+				// Notify client on number of bytes to read
+				outToClient.writeBytes(dataToClient.size() + "\n");
+
+				// Push all bytes to client
+				dataToClient.flush();
+			} catch (Exception e) {
+				// Fail quietly
+			}
+		}
 	}
 
 }

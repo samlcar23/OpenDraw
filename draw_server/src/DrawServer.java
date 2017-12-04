@@ -66,7 +66,7 @@ public class DrawServer {
 				controlSocket = welcomeSocket.accept();
 
 				// Create a new thread to handle each client
-				ClientThread thread = new ClientThread(controlSocket, drawer);
+				ClientThread thread = new ClientThread(controlSocket, this);
 
 				// Start the thread
 				thread.start();
@@ -87,6 +87,15 @@ public class DrawServer {
 				// Fail quietly
 			}
 		}
+	}
+
+	/**
+	* Adds new updates to the DrawThread to be drawn onto the drawing canvas
+	*
+	* @param updates A list o new updates to draw on canvas
+	*/
+	public void addUpdates(LinkedList<String> updates) {
+		drawer.addUpdates(updates);
 	}
 
 	/**
