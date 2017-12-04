@@ -8,14 +8,14 @@ import java.util.LinkedList;
 import javax.swing.JComponent;
 
 /**
- * Thread responsible for updating its parent DrawServer's drawing canvas
+ * Thread responsible for updating its parent Server's drawing canvas
  *
  * @author Troy Madsen
  */
-public class DrawThread extends Thread {
+public class ServerUpdateThread extends Thread {
 
-	/** The parent DrawServer of this DrawThread */
-	private DrawServer server;
+	/** The parent Server of this ServerUpdateThread */
+	private Server server;
 
 	/** The drawing canvas this maintains */
 	private JComponent component;
@@ -27,11 +27,11 @@ public class DrawThread extends Thread {
 	private LinkedList<String> updates;
 
 	/**
-	* Creates a new DrawThread with the provided drawing canvas and update list
+	* Creates a new ServerUpdateThread with the provided drawing canvas and update list
 	*
-	* @param server The parent server of this DrawThread
+	* @param server The parent server of this ServerUpdateThread
 	*/
-	public DrawThread(DrawServer server) {
+	public ServerUpdateThread(Server server) {
 		this.server = server;
 		this.component = server.getComponent();
 
@@ -69,7 +69,7 @@ public class DrawThread extends Thread {
 	}
 
 	/**
-	* Operation of DrawThread
+	* Operation of ServerUpdateThread
 	*/
 	public void run() {
 		String update;

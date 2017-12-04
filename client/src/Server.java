@@ -10,7 +10,7 @@ import javax.swing.JComponent;
  *
  * @author Troy Madsen
  */
-public class DrawServer {
+public class Server {
 
 	/** The IP address of the registration server */
 	private static String REGISTRY_IP = "13.58.209.10";
@@ -22,30 +22,30 @@ public class DrawServer {
 	private JComponent component;
 
 	/** Thread responsible for updating canvas */
-	private DrawThread drawer;
+	private ServerUpdateThread drawer;
 
 	/**
-	* Creates a DrawServer object with a drawing canvas of width = 500
+	* Creates a Server object with a drawing canvas of width = 500
 	* and height = 500
 	*/
-	public DrawServer() {
+	public Server() {
 		this(1000, 500);
 	}
 
 	/**
-	* Creates a DrawServer object with a drawing canvas of the given dimensions and
+	* Creates a Server object with a drawing canvas of the given dimensions and
 	* awaits client connections
 	*
 	* @param width The width of the drawing canvas
 	* @param height The height of the drawing canvas
 	*/
-	public DrawServer(int width, int height) {
+	public Server(int width, int height) {
 		// Create a drawing canvas for the clients to draw on
 		component = (JComponent)(new Container());
 		component.setSize(width, height);
 
-		// Create DrawThread to maintain drawing canvas
-		drawer = new DrawThread(this);
+		// Create ServerUpdateThread to maintain drawing canvas
+		drawer = new ServerUpdateThread(this);
 
 		// Start drawer to draw updates to canvas
 		drawer.start();
@@ -66,7 +66,7 @@ public class DrawServer {
 				controlSocket = welcomeSocket.accept();
 
 				// Create a new thread to handle each client
-				ClientThread thread = new ClientThread(controlSocket, this);
+				ServerToClientThread thread = new ServerToClientThread(controlSocket, this);
 
 				// Start the thread
 				thread.start();
@@ -90,7 +90,7 @@ public class DrawServer {
 	}
 
 	/**
-	* Adds new updates to the DrawThread to be drawn onto the drawing canvas
+	* Adds new updates to the ServerUpdateThread to be drawn onto the drawing canvas
 	*
 	* @param updates A list o new updates to draw on canvas
 	*/
@@ -99,7 +99,7 @@ public class DrawServer {
 	}
 
 	/**
-	* Provides the drawing canvas of the DrawServer
+	* Provides the drawing canvas of the Server
 	*/
 	public JComponent getComponent() {
 		return component;
@@ -115,19 +115,19 @@ public class DrawServer {
 	}
 
 	/**
-	* Entry point of the DrawServer class. Creates a new DrawServer with given parameters
+	* Entry point of the Server class. Creates a new Server with given parameters
 	* or of default size.
 	*
 	* @param args A list of parameters to set the size of the drawing canvas to in the
-	* format DrawServer [WIDTH] [HEIGHT]
+	* format Server [WIDTH] [HEIGHT]
 	*/
 	public static void main(String[] args) {
-		// Parse and launch the appropriate DrawServer configuration
+		// Parse and launch the appropriate Server configuration
 		if (args.length == 0) {
-			new DrawServer();
+			new Server();
 		} else {
 			try {
-				new DrawServer(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+				new Server(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 			} catch (Exception e) {
 				System.out.println("Incorrect parameters");
 			}

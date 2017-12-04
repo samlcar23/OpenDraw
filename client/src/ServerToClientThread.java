@@ -14,10 +14,10 @@ import java.util.TimerTask;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
-public class ClientThread extends Thread{
+public class ServerToClientThread extends Thread{
 
 	/** Parent of this object */
-	private DrawServer server;
+	private Server server;
 
 	/** Control socket for communicating with the client */
        	private Socket controlSocket;
@@ -38,12 +38,12 @@ public class ClientThread extends Thread{
 	private Timer sendTimer;
 
 	/**
-	* Creates a new ClientThread object with the given control socket and DrawThread
+	* Creates a new ServerToClientThread object with the given control socket and ServerUpdateThread
 	*
 	* @param controlSocket The socket that control commands will be send over
 	* @param server The parent server of this object
 	*/
-	public ClientThread(Socket controlSocket, DrawServer server) {
+	public ServerToClientThread(Socket controlSocket, Server server) {
 		this.controlSocket = controlSocket;
 		this.server = server;
 
