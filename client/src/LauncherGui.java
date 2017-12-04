@@ -32,7 +32,7 @@ import javax.swing.table.TableRowSorter;
  * @author Sam Carson
  *
  */
-public class ServerListGUI extends JFrame implements MouseListener, RowSorterListener {
+public class LauncherGui extends JFrame implements MouseListener, RowSorterListener {
 	
 		/**
 		 * 
@@ -80,7 +80,7 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 */
 		private DefaultTableModel model;
 		
-		private Client client;
+		private Launcher client;
 		
 		/**
 		 * creates the menu frame.
@@ -88,7 +88,7 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 * @param server 
 		 * @param mode the current mode to be played
 		 */
-		public ServerListGUI(String server, int port) {
+		public LauncherGui(String server, int port) {
 			//setup the frame
 			this.setTitle("Server Menu");
 			this.setSize(1200, 700);
@@ -215,7 +215,7 @@ public class ServerListGUI extends JFrame implements MouseListener, RowSorterLis
 		 * 
 		 * @param c Client
 		 */
-		public void start(Client c) {
+		public void start(Launcher c) {
 			client = c;
 			
 		}

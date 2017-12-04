@@ -7,7 +7,7 @@ import java.util.*;
  * @author Sam Carson
  *
  */
-public class Client {
+public class Launcher {
 	
 	private ObjectOutputStream out;
 	
@@ -15,7 +15,7 @@ public class Client {
 	
 	private Socket socket;
 	
-	private ServerListGUI gui;
+	private LauncherGui gui;
 	
 	private String server;
 	
@@ -26,7 +26,7 @@ public class Client {
 	/*
 	 * constructor
 	 */
-	public Client(String server, int port, ServerListGUI gui) {
+	public Launcher(String server, int port, LauncherGui gui) {
 		this.server = server;
 		this.port = port;
 		this.gui = gui;
@@ -137,10 +137,10 @@ public class Client {
 		int portNum = 5335;
 		//aws ip = 13.58.209.10
 		String serverAdd = "13.58.209.10";
-		ServerListGUI gui = new ServerListGUI(serverAdd, portNum);
+		LauncherGui gui = new LauncherGui(serverAdd, portNum);
 		
 		//create client
-		Client client = new Client(serverAdd, portNum, gui);
+		Launcher client = new Launcher(serverAdd, portNum, gui);
 		
 		gui.start(client);
 		
