@@ -126,7 +126,7 @@ public class Whiteboard extends Observable {
 		JButton squareButton = new JButton("Square");
 		JButton penButton = new JButton("Pen");
 		JButton eraserButton = new JButton("Eraser");
-		JButton styleButton = new JButton("Style");
+		JButton brushButton = new JButton("Brush");
 		JButton triangleButton = new JButton("Triangle");
 		JButton stampButton = new JButton("Stamp");
 
@@ -139,9 +139,9 @@ public class Whiteboard extends Observable {
 		 * create check boxes
 		 */
 		JCheckBox filledBox = new JCheckBox();
-		
+
 		filledBox.setSelected(true);
-		
+
 		/*
 		 * setup our scale slider
 		 */
@@ -161,7 +161,7 @@ public class Whiteboard extends Observable {
 		layout.setVgap(10);
 
 		buttonPanel.setLayout(layout);
-		
+
 		/*
 		 * set the layout for the bottom panel
 		 */
@@ -186,25 +186,25 @@ public class Whiteboard extends Observable {
 		 * add buttons to the button panel
 		 */
 		buttonPanel.add(penButton);
-		buttonPanel.add(styleButton);
+		buttonPanel.add(brushButton);
 		buttonPanel.add(circleButton);
 		buttonPanel.add(squareButton);
 		buttonPanel.add(triangleButton);
 		buttonPanel.add(stampButton);
 		buttonPanel.add(colorButton);
 		buttonPanel.add(eraserButton);
-		
+
 		/*
 		 * add icons to buttons
 		 */
-		penButton.setIcon(new ImageIcon("../icons/pen.png"));
-		styleButton.setIcon(new ImageIcon("../icons/style.png"));
-		circleButton.setIcon(new ImageIcon("../icons/circle.png"));
-		squareButton.setIcon(new ImageIcon("../icons/square.png"));
-		triangleButton.setIcon(new ImageIcon("../icons/triangle.png"));
-		eraserButton.setIcon(new ImageIcon("../icons/eraser.png"));
-		stampButton.setIcon(new ImageIcon("../icons/stamp.png"));
-		colorButton.setIcon(new ImageIcon("../icons/palette.png"));
+		penButton.setIcon(new ImageIcon("icons/pen.png"));
+		brushButton.setIcon(new ImageIcon("icons/brush.jpg"));
+		circleButton.setIcon(new ImageIcon("icons/circle.png"));
+		squareButton.setIcon(new ImageIcon("icons/square.png"));
+		triangleButton.setIcon(new ImageIcon("icons/triangle.png"));
+		eraserButton.setIcon(new ImageIcon("icons/eraser.png"));
+		stampButton.setIcon(new ImageIcon("icons/stamp.png"));
+		colorButton.setIcon(new ImageIcon("icons/palette.png"));
 
 		/*
 		 * add the east and east portions to the bottom panel
@@ -229,7 +229,7 @@ public class Whiteboard extends Observable {
 		/*
 		 * ********** ********** mouse listeners ********** **********
 		 */
-		
+
 		/*
 		 * updates graphics upon mouse pressed
 		 */
@@ -249,7 +249,7 @@ public class Whiteboard extends Observable {
 
 			}
 		});
-		
+
 		/*
 		 * ********** ********** mouse motion listeners ********** **********
 		 */
@@ -276,7 +276,7 @@ public class Whiteboard extends Observable {
 		/*
 		 * ********** ********** action listeners ********** **********
 		 */
-		
+
 		/*
 		 * clears the screen upon client request
 		 */
@@ -338,9 +338,9 @@ public class Whiteboard extends Observable {
 		/*
 		 * change the drawing cursor to stylistic (slanted line)
 		 */
-		styleButton.addActionListener(new ActionListener() {
+		brushButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				shape = "style";
+				shape = "brush";
 			}
 		});
 
@@ -373,7 +373,7 @@ public class Whiteboard extends Observable {
 		});
 
 		/*
-		 * UNUSED
+		 * changes the drawing cursor to a triangle
 		 */
 		triangleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -395,20 +395,23 @@ public class Whiteboard extends Observable {
 		 */
 		stampButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					shape = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
-							JOptionPane.PLAIN_MESSAGE);
-				} catch (Exception exception) {
-					shape = "pen";
-				}
+				String input = "";
 				
+				input = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
+						JOptionPane.PLAIN_MESSAGE);
+				
+				if (input == null) {
+					shape = "pen";
+				} else {
+					shape = input;
+				}
 			}
 		});
-		
+
 		/*
 		 * ********** ********** change listeners ********** **********
 		 */
-		
+
 		/*
 		 * changes the scale upon slider movement
 		 */
