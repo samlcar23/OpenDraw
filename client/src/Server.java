@@ -10,7 +10,7 @@ import javax.swing.JComponent;
  *
  * @author Troy Madsen
  */
-public class Server {
+public class Server extends Thread {
 
 	/** The IP address of the registration server */
 	private static String REGISTRY_IP = "13.58.209.10";
@@ -46,7 +46,37 @@ public class Server {
 
 		// Create ServerUpdateThread to maintain drawing canvas
 		drawer = new ServerUpdateThread(this);
+	}
 
+	/**
+	* Adds new updates to the ServerUpdateThread to be drawn onto the drawing canvas
+	*
+	* @param updates A list o new updates to draw on canvas
+	*/
+	public void addUpdates(LinkedList<String> updates) {
+		drawer.addUpdates(updates);
+	}
+
+	/**
+	* Provides the drawing canvas of the Server
+	*/
+	public JComponent getComponent() {
+		return component;
+	}
+
+	/**
+	* Sets drawing canvas to the provided one
+	*
+	* @param component The new drawing canvas to draw
+	*/
+	public void setComponent(JComponent component) {
+		this.component = component;
+	}
+
+	/**
+	* Operation of the Server
+	*/
+	public void run() {
 		// Start drawer to draw updates to canvas
 		drawer.start();
 	
@@ -87,31 +117,6 @@ public class Server {
 				// Fail quietly
 			}
 		}
-	}
-
-	/**
-	* Adds new updates to the ServerUpdateThread to be drawn onto the drawing canvas
-	*
-	* @param updates A list o new updates to draw on canvas
-	*/
-	public void addUpdates(LinkedList<String> updates) {
-		drawer.addUpdates(updates);
-	}
-
-	/**
-	* Provides the drawing canvas of the Server
-	*/
-	public JComponent getComponent() {
-		return component;
-	}
-
-	/**
-	* Sets drawing canvas to the provided one
-	*
-	* @param component The new drawing canvas to draw
-	*/
-	public void setComponent(JComponent component) {
-		this.component = component;
 	}
 
 	/**
