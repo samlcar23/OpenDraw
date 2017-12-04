@@ -24,9 +24,6 @@ public class DrawServer {
 	/** Thread responsible for updating canvas */
 	private DrawThread drawer;
 
-	/** List of updates for to be drawn on the canvas */
-	private LinkedList<String> updates;
-
 	/**
 	* Creates a DrawServer object with a drawing canvas of width = 500
 	* and height = 500
@@ -44,15 +41,11 @@ public class DrawServer {
 	*/
 	public DrawServer(int width, int height) {
 		// Create a drawing canvas for the clients to draw on
-//		canvas = (new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)).createGraphics();
 		component = (JComponent)(new Container());
 		component.setSize(width, height);
 
-		// Create a LinkedList of updates to write to the drawing canvas
-		updates = new LinkedList<>();
-
 		// Create DrawThread to maintain drawing canvas
-		drawer = new DrawThread(component, updates);
+		drawer = new DrawThread(this);
 
 		// Start drawer to draw updates to canvas
 		drawer.start();
@@ -94,6 +87,22 @@ public class DrawServer {
 				// Fail quietly
 			}
 		}
+	}
+
+	/**
+	* Provides the drawing canvas of the DrawServer
+	*/
+	public JComponent getComponent() {
+		return component;
+	}
+
+	/**
+	* Sets drawing canvas to the provided one
+	*
+	* @param component The new drawing canvas to draw
+	*/
+	public void setComponent(JComponent component) {
+		this.component = component;
 	}
 
 	/**

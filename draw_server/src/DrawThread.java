@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -13,11 +14,11 @@ import javax.swing.JComponent;
  */
 public class DrawThread extends Thread {
 
+	/** The parent DrawServer of this DrawThread */
+	private DrawServer server;
+
 	/** The drawing canvas this maintains */
 	private JComponent component;
-
-	/** Image to be displayed as the canvas */
-	private Image image;
 
 	/** A wrapper for interacting with the image of the drawing canvas */
 	private Graphics2D canvas;
@@ -28,12 +29,13 @@ public class DrawThread extends Thread {
 	/**
 	* Creates a new DrawThread with the provided drawing canvas and update list
 	*
-	* @param canvas The drawing canvas that updates are drawn on
-	* @param updates The list of new updates to be drawn on the drawing canvas
+	* @param server The parent server of this DrawThread
 	*/
-	public DrawThread(JComponent component, LinkedList<String> updates) {
-		this.component = component;
+	public DrawThread(DrawServer server) {
+		this.server = server;
+		this.component = server.getComponent();
 
+		// Generating the image
 		paintComponent();
 
 		this.updates = updates;
@@ -43,20 +45,18 @@ public class DrawThread extends Thread {
 	* Paints the image for the first time
 	*/
 	private void paintComponent() {
-		if (image == null) {
-			// Create the drawing canvas
-			image = component.createImage(component.getSize().width, component.getSize().height);
-			canvas = (Graphics2D)image.getGraphics();
+		// Create the drawing canvas
+		canvas = (Graphics2D)component.createImage(component.getSize().width, component.getSize().height).getGraphics();
 
-			// Create an empty canvas
-			canvas.setPaint(Color.WHITE);
-			canvas.fillRect(0, 0, component.getSize().width, component.getSize().height);
+		// Create an empty canvas
+		canvas.setPaint(Color.WHITE);
+		canvas.fillRect(0, 0, component.getSize().width, component.getSize().height);
 
-			// Canvas features
-			canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		// Canvas features
+		canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			component.repaint();
-		}
+		//TODO is this needed?
+		//component.repaint();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class DrawThread extends Thread {
 			// Parse the update for the drawing type and parameters
 			String[] params = update.split(" ");
 
-			// Determine which drawing type is being added
+			// Determine which drawing type is being added and draw it
 			if (params[0].equals("pen") && params.length == 8) {
 				// pen [oX] [oY] [cX] [cY] [Red] [Green] [Blue]
 				canvas.setColor(new Color(Integer.parseInt(params[5]), Integer.parseInt(params[6]), Integer.parseInt(params[7])));
@@ -150,9 +150,25 @@ public class DrawThread extends Thread {
 			} else if (params[0].equals("resize") && params.length == 3) {
 				// resize [Width] [Height]
 				//TODO This needs to be added
+				//Create a new drawing canvas and set its size
+				JComponent newComp = (JComponent)(new Container());
+				newComp.setSize(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
+
+				// Draw the old canvas on the new canvas
+				newComp.createImage(newComp.getSize().width, newComp.getSize().height).getGraphics().drawImage(component.createImage(component.getSize().width, component.getSize().height), 0, 0, Color.WHITE, null);
+
+				// Set the new canvas
+				server.setComponent(newComp);
+
+				// Set the drawing canvas this is operating on
+				//TODO component = server.getomponent
+				component = newComp;
+
+				// Generating the image
+				paintComponent();
 
 			} else if (params[0].equals("clear") && params.length == 1) {
-				// clear the drawing canvas
+				// clear
 				canvas.setPaint(Color.WHITE);
 				canvas.fillRect(0, 0, component.getSize().width, component.getSize().height);
 
