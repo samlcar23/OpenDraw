@@ -32,17 +32,23 @@ public class DrawSpace extends JComponent {
 	private int scale;
 
 	/*
-	 * setter for Graphics2D
+	 * getter for Graphics2D
 	 */
 	public Graphics2D getGraphics() {
 		return graphics2D;
 	}
 
 	/*
-	 * getter for Graphics2D
+	 * setter for Graphics2D
 	 */
 	public void setGraphics(Graphics2D graphicInput) {
 		graphics2D = graphicInput;
+		update();
+	}
+	
+	public void setGraphicsImage(Image imageInput) {
+		graphics2D = (Graphics2D) imageInput.getGraphics();
+		update();
 	}
 
 	/*
@@ -83,12 +89,17 @@ public class DrawSpace extends JComponent {
 		 */
 		if (shape.equals("pen") == true) {
 			graphics2D.drawLine(oX, oY, cX, cY);
-		} else if (shape.equals("style") == true) {
+		} else if (shape.equals("brush") == true) {
 			/*
 			 * draw a stylized line
 			 */
 			graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, scale));
-			graphics2D.drawString("/", cX, cY);
+			graphics2D.drawString("|", cX, cY);
+			graphics2D.drawString("/", cX - 1, cY - 1);
+			graphics2D.drawString("\\", cX + 1, cY + 1);
+			graphics2D.drawString("/", cX + 2, cY + 2);
+			graphics2D.drawString("\\", cX - 2, cY - 2);
+
 		} else if (shape.equals("circle") == true) {
 			if (filled == true) {
 				/*
@@ -150,6 +161,7 @@ public class DrawSpace extends JComponent {
 	public void paintComponent(Graphics g) {
 		if (image == null) {
 			image = createImage(this.getSize().width, this.getSize().height);
+			
 			graphics2D = (Graphics2D) image.getGraphics();
 
 			graphics2D.setPaint(Color.white);
