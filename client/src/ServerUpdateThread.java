@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 
@@ -18,7 +19,7 @@ public class ServerUpdateThread extends Thread {
 	private Server server;
 
 	/** The drawing canvas this maintains */
-	private JComponent component;
+	private BufferedImage component;
 
 	/** A wrapper for interacting with the image of the drawing canvas */
 	private Graphics2D canvas;
@@ -38,7 +39,7 @@ public class ServerUpdateThread extends Thread {
 		// Generating the image
 		paintComponent();
 
-		this.updates = updates;
+		this.updates = new LinkedList<String>();
 	}
 
 	/**
@@ -46,11 +47,11 @@ public class ServerUpdateThread extends Thread {
 	*/
 	private void paintComponent() {
 		// Create the drawing canvas
-		canvas = (Graphics2D)component.createImage(component.getSize().width, component.getSize().height).getGraphics();
+		canvas = (Graphics2D)component.createGraphics();
 
 		// Create an empty canvas
 		canvas.setPaint(Color.WHITE);
-		canvas.fillRect(0, 0, component.getSize().width, component.getSize().height);
+		canvas.fillRect(0, 0, component.getWidth(), component.getHeight());
 
 		// Canvas features
 		canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -151,7 +152,7 @@ public class ServerUpdateThread extends Thread {
 			} else if (params[0].equals("clear") && params.length == 1) {
 				// clear
 				canvas.setPaint(Color.WHITE);
-				canvas.fillRect(0, 0, component.getSize().width, component.getSize().height);
+				canvas.fillRect(0, 0, component.getWidth(), component.getHeight());
 
 			}
 		}

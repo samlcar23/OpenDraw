@@ -108,7 +108,11 @@ public class DrawSpace extends JComponent {
 	}
 
 	public void setImage(Image image) {
-		graphics2D.drawImage(image, 0, 0, null);
+		System.out.println("GRAPHICSSSSS\t" + graphics2D);
+		System.out.println("IMMMMMAGGGGEEE\t" + image);
+		//if (graphics2D != null) {
+			graphics2D.drawImage(image, 0, 0, null);
+		//}
 	}
 
 	/*

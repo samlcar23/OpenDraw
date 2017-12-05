@@ -138,6 +138,11 @@ public class Launcher {
 		server.start();
 
 		Client c = new Client(ip, port);
+		c.start();
+
+		while (c.isAlive());
+
+		System.out.println("*********DEAD");
 
 		//sends serverInfo object to server with type 1 to indicate that it should be removed
 		ServerInfo serverToDelete = new ServerInfo(null, null, ip, 1);
@@ -148,6 +153,7 @@ public class Launcher {
 		int port = 5445;
 
 		Client c = new Client(ip, port);
+		c.start();
 	}
 
 	

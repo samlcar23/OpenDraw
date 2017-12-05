@@ -122,6 +122,7 @@ public class Whiteboard extends Observable {
 		 * create THIS instance of DrawSpace
 		 */
 		drawSpace = new DrawSpace();
+		//drawSpace.repaint();
 
 		/*
 		 * fill THIS instance of the graphics with the graphics from the server
@@ -223,14 +224,14 @@ public class Whiteboard extends Observable {
 		/*
 		 * add icons to buttons
 		 */
-		penButton.setIcon(new ImageIcon("icons/pen.png"));
-		brushButton.setIcon(new ImageIcon("icons/brush.jpg"));
-		circleButton.setIcon(new ImageIcon("icons/circle.png"));
-		squareButton.setIcon(new ImageIcon("icons/square.png"));
-		triangleButton.setIcon(new ImageIcon("icons/triangle.png"));
-		eraserButton.setIcon(new ImageIcon("icons/eraser.png"));
-		stampButton.setIcon(new ImageIcon("icons/stamp.png"));
-		colorButton.setIcon(new ImageIcon("icons/palette.png"));
+		penButton.setIcon(new ImageIcon("../icons/pen.png"));
+		brushButton.setIcon(new ImageIcon("../icons/brush.jpg"));
+		circleButton.setIcon(new ImageIcon("../icons/circle.png"));
+		squareButton.setIcon(new ImageIcon("../icons/square.png"));
+		triangleButton.setIcon(new ImageIcon("../icons/triangle.png"));
+		eraserButton.setIcon(new ImageIcon("../icons/eraser.png"));
+		stampButton.setIcon(new ImageIcon("../icons/stamp.png"));
+		colorButton.setIcon(new ImageIcon("../icons/palette.png"));
 
 		/*
 		 * add the east and east portions to the bottom panel
@@ -496,6 +497,7 @@ public class Whiteboard extends Observable {
 	}
 
 	public void setImage(Image image) {
+		System.out.println("IMMMMMMMMMMAGE\t" + image);
 		drawSpace.setImage(image);
 	}
 	/*

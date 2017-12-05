@@ -1,4 +1,4 @@
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedInputStream;
@@ -29,7 +29,7 @@ public class ServerToClientThread extends Thread{
         private DataOutputStream outToClient;
 
 	/** Data output stream to send the image */
-	private ByteArrayOutputStream dataToClient;
+	private DataOutputStream dataToClient;
 
 	/** Control input stream for receiving commands from the client */
         private BufferedReader inFromClient;
@@ -54,10 +54,12 @@ public class ServerToClientThread extends Thread{
 
 			// Notify client of connection
 			outToClient.writeBytes("200 command ok\n");
+			outToClient.flush();
 		} catch (Exception e) {
 			// Notify client of connection failure
 			try {
 				outToClient.writeBytes("123 connection failed\n");
+				outToClient.flush();
 			} catch (Exception ex) {
 				// Fail quietly
 			}
@@ -68,7 +70,7 @@ public class ServerToClientThread extends Thread{
 
 		// Create and start send timer
 		sendTimer = new Timer("SendTimer");
-		sendTimer.schedule(new SendImage(), 0, 10);
+		sendTimer.schedule(new SendImage(), 1000, 1000);
 	}
 
 	/**
@@ -95,7 +97,7 @@ public class ServerToClientThread extends Thread{
 	* @return Whether the server is connected to a client
 	*/
 	private boolean isConnected() {
-		return controlSocket != null && controlSocket.isConnected() && !controlSocket.isClosed();
+		return controlSocket != null && controlSocket.isConnected() && !controlSocket.isClosed() && dataSocket != null && dataSocket.isConnected() && !dataSocket.isClosed();
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class ServerToClientThread extends Thread{
 	public void run() {
 		String address = controlSocket.getInetAddress().toString();
 		System.out.println(address + " connected");
-
+		System.out.println(isConnected());
 		while (isConnected()) {
 			try {
 				// Wait for a command from the client
@@ -123,7 +125,7 @@ public class ServerToClientThread extends Thread{
 			}
 		}
 
-		System.out.println(address + "disconnected\n");
+		System.out.println(address + " disconnected\n");
 
 	}
 
@@ -137,33 +139,43 @@ public class ServerToClientThread extends Thread{
 		*/
 		public SendImage() {
 			try {
+				while (!inFromClient.ready());
+				String ready = inFromClient.readLine();
+				System.out.println("RECEIVED\t" + ready);
 				// Establish data connection with client
-				dataSocket = new Socket(controlSocket.getInetAddress(), 5340);
+				dataSocket = new Socket(controlSocket.getInetAddress(), 5447);
+
+				System.out.println("SHIT FUCK SHIT FUCK FUCK SHIT FUCK SHIT SHIT FU");
 			
 				// Set up data stream
-				dataToClient = (ByteArrayOutputStream)dataSocket.getOutputStream();
+				dataToClient = new DataOutputStream(dataSocket.getOutputStream());
+
+				System.out.println("UNCHARTED TERRITORY OF ISIS");
 			} catch (Exception e) {
 				// Close the connection if data connection cannot be established
+				System.out.println("HASHTAG IM OT THIS BIGCH");
 				quit();
 			}
 		}
 
 		public void run() {
+
+			System.out.println("FSJIOOIFJSEFOJSEFOIJFSEOIJSEFIOJSFOIJFSEIOFSEIJFSEIOJSEFIOJFSEJEFSIOJSEFIOJF:");
 			// Canvas that the image is loaded from
-			JComponent comp = server.getComponent();
+			BufferedImage comp = server.getComponent();
 
 			// Buffer the image to transform into bytes
-			BufferedImage buff = new BufferedImage(comp.getSize().width, comp.getSize().height, BufferedImage.TYPE_INT_RGB);
+			//BufferedImage buff = new BufferedImage(comp.getSize().width, comp.getSize().height, BufferedImage.TYPE_INT_RGB);
 
 			// Draw the current image to the buffered image
-			Graphics2D draw = buff.createGraphics();
-			draw.drawImage(comp.createImage(comp.getSize().width, comp.getSize().height), 0, 0, null);
+			Graphics2D draw = comp.createGraphics();
+			draw.drawImage(comp, 0, 0, null);
 			draw.dispose();
 
 			// Write the image to the data connection
 			try {
 				// Load image into buffer
-				ImageIO.write(buff, "jpg", dataToClient);
+				ImageIO.write(comp, "jpg", dataToClient);
 
 				// Notify client on number of bytes to read
 				int size = dataToClient.size();

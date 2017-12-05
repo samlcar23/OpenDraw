@@ -11,7 +11,7 @@ import java.util.Observer;
  *
  * @author Troy Madsen
  */
-public class Client implements Observer {
+public class Client extends Thread implements Observer {
 
 	/** The gui of the Client */
 	private Whiteboard gui;
@@ -80,15 +80,28 @@ public class Client implements Observer {
 			inFromServer = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
 
 			// Set up data socket
-			// Wait for the 
+			// Wait for the
+			System.out.println("WAITING TO BE READY");
+
 			while (!inFromServer.ready());
 
+			System.out.println("DYNOMTITESEFJIOS");
+
 			// Exit if the server has no file to be transferred
-			if (!inFromServer.readLine().equals("200 command ok")) running = false;
+			if (!inFromServer.readLine().equals("200 command ok")) {
+				running = false;
+				return false;
+			}
+
+			System.out.println("WAITIN ON DAT SOCKET DOE");
 
 			// Create data connection
 			ServerSocket welcomeSocket = new ServerSocket(port + 2);
+			outToServer.writeBytes("ready\n");
+			outToServer.flush();
 			dataSocket = welcomeSocket.accept();
+
+			System.out.println("AIJFOJOI");
 
 			// Set up data stream
 			dataFromServer = dataSocket.getInputStream();
@@ -151,6 +164,40 @@ public class Client implements Observer {
 		}
 	}
 
+	@Override
+	public void run() {
+
+		running = true;
+
+		// Continually update the image
+		while (running) {
+			System.out.println("FUCK");
+			try {
+				while (!inFromServer.ready());
+
+				System.out.println("ready or not");
+
+				int sizeMatters = Integer.parseInt(inFromServer.readLine());
+
+				System.out.println("size matters\t" + sizeMatters);
+
+				byte[] bytes = new byte[sizeMatters];
+				dataFromServer.read(bytes, 0, sizeMatters);
+
+				System.out.println("image");
+
+				ImageIcon imageIcon = new ImageIcon(bytes);
+				Image image = imageIcon.getImage();
+
+				System.out.println(image);
+				gui.setImage(image);
+
+			}catch (IOException e) {
+
+			}
+		}
+	}
+
 	/**
 	* Creates a new Client object connected to the server at
 	* the specified ip and port
@@ -161,30 +208,12 @@ public class Client implements Observer {
 	public Client(String ip, int port) {
 		// Connect to the provided server
 		connect(ip, port);
+		System.out.println("BOO TANG");
+		System.out.println(isConnected());
 
 		// Create and subscribe to gui
 		gui = new Whiteboard();
 		gui.addObserver(this);
-
-		// Continually update the image
-		while (running) {
-			try {
-				while (!inFromServer.ready());
-
-				int sizeMatters = Integer.parseInt(inFromServer.readLine());
-
-				byte[] bytes = new byte[sizeMatters];
-				dataFromServer.read(bytes, 0, sizeMatters);
-
-				ImageIcon imageIcon = new ImageIcon(bytes);
-				Image image = imageIcon.getImage();
-
-				gui.setImage(image);
-
-			}catch (IOException e) {
-
-			}
-		}
 	}
 
 }

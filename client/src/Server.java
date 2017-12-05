@@ -19,7 +19,7 @@ public class Server extends Thread {
 	private static int REGISTRY_PORT = 5335;
 
 	/** The drawing canvas of the server */
-	private JComponent component;
+	private BufferedImage component;
 
 	/** Thread responsible for updating canvas */
 	private ServerUpdateThread drawer;
@@ -41,8 +41,9 @@ public class Server extends Thread {
 	*/
 	public Server(int width, int height) {
 		// Create a drawing canvas for the clients to draw on
-		component = (JComponent)(new Container());
-		component.setSize(width, height);
+		//component = (JComponent)(new Container());
+		component = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+		//component.setSize(width, height);
 
 		// Create ServerUpdateThread to maintain drawing canvas
 		drawer = new ServerUpdateThread(this);
@@ -60,7 +61,7 @@ public class Server extends Thread {
 	/**
 	* Provides the drawing canvas of the Server
 	*/
-	public JComponent getComponent() {
+	public BufferedImage getComponent() {
 		return component;
 	}
 
@@ -69,7 +70,7 @@ public class Server extends Thread {
 	*
 	* @param component The new drawing canvas to draw
 	*/
-	public void setComponent(JComponent component) {
+	public void setComponent(BufferedImage component) {
 		this.component = component;
 	}
 
