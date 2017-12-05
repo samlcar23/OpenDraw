@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,6 +36,11 @@ public class Whiteboard extends Observable {
 	 * current color
 	 */
 	private Color color;
+	
+	/*
+	 * int for counting rainbow color position
+	 */
+	private int colorCounter;
 
 	/*
 	 * current drawing shape
@@ -62,6 +68,11 @@ public class Whiteboard extends Observable {
 	private boolean isFilled;
 
 	/*
+	 * boolean for whether the selected object is a rainbow
+	 */
+	private boolean rainbow;
+
+	/*
 	 * minimum scale size for slider
 	 */
 	private int SCALEMIN = 10;
@@ -70,6 +81,12 @@ public class Whiteboard extends Observable {
 	 * maximum scale size for slider
 	 */
 	private int SCALEMAX = 100;
+	
+	/*
+	 * color array for rainbow
+	 */
+	private Color[] colorArray = {Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue,
+			Color.magenta, Color.pink};
 
 	/*
 	 * Whiteboard class holding the DrawSpace also builds the complete frame and GUI
@@ -85,6 +102,11 @@ public class Whiteboard extends Observable {
 		 * initial color is black
 		 */
 		color = Color.black;
+		
+		/*
+		 * color counter initially zero
+		 */
+		colorCounter = 0;
 
 		/*
 		 * initial shape is pen
@@ -139,8 +161,10 @@ public class Whiteboard extends Observable {
 		 * create check boxes
 		 */
 		JCheckBox filledBox = new JCheckBox();
+		JCheckBox rainbowBox = new JCheckBox();
 
 		filledBox.setSelected(true);
+		rainbowBox.setSelected(false);
 
 		/*
 		 * setup our scale slider
@@ -181,6 +205,8 @@ public class Whiteboard extends Observable {
 		bottomPanelEast.add(scaleSlider);
 		bottomPanelEast.add(new JLabel("Fill:"));
 		bottomPanelEast.add(filledBox);
+		bottomPanelEast.add(new JLabel("Rainbow:"));
+		bottomPanelEast.add(rainbowBox);
 
 		/*
 		 * add buttons to the button panel
@@ -240,6 +266,17 @@ public class Whiteboard extends Observable {
 
 				dragX = e.getX();
 				dragY = e.getY();
+				
+				if (rainbow == true) {
+					colorCounter = 0;
+					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
+				} else {
+					colorCounter = 0;
+				}
+				
+				if (colorCounter == colorArray.length - 1) {
+					colorCounter = 0;
+				}
 
 				if (graphics2D != null) {
 					drawSpace.draw(clickX, clickY, dragX, dragY, shape, scale, isFilled);
@@ -261,9 +298,23 @@ public class Whiteboard extends Observable {
 			public void mouseDragged(MouseEvent e) {
 				dragX = e.getX();
 				dragY = e.getY();
+				
+				if (rainbow == true) {
+					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
+				} else {
+					colorCounter = 0;
+				}
 
 				if (graphics2D != null) {
 					drawSpace.draw(clickX, clickY, dragX, dragY, shape, scale, isFilled);
+				}
+				
+				if (rainbow == true) {
+					colorCounter++;
+				}
+				
+				if (colorCounter == colorArray.length - 1) {
+					colorCounter = 0;
 				}
 
 				update();
@@ -396,10 +447,10 @@ public class Whiteboard extends Observable {
 		stampButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String input = "";
-				
+
 				input = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
 						JOptionPane.PLAIN_MESSAGE);
-				
+
 				if (input == null) {
 					shape = "pen";
 				} else {
@@ -427,6 +478,15 @@ public class Whiteboard extends Observable {
 		filledBox.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				isFilled = filledBox.isSelected();
+			}
+		});
+
+		/*
+		 * changes the boolean rainbow value upon a change
+		 */
+		rainbowBox.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				rainbow = rainbowBox.isSelected();
 			}
 		});
 	}
