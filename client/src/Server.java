@@ -52,10 +52,10 @@ public class Server extends Thread {
 	/**
 	* Adds new updates to the ServerUpdateThread to be drawn onto the drawing canvas
 	*
-	* @param updates A list o new updates to draw on canvas
+	* @param update A string of new updates to draw on canvas
 	*/
-	public void addUpdates(LinkedList<String> updates) {
-		drawer.addUpdates(updates);
+	public void addUpdate(String update) {
+		drawer.addUpdate(update);
 	}
 
 	/**

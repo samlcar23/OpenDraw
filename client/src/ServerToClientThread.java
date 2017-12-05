@@ -118,7 +118,7 @@ public class ServerToClientThread extends Thread{
 				if (command.startsWith("quit")) {
 					quit();
 				} else {
-					
+					server.addUpdate(command);
 				}
 			} catch (Exception e) {
 				// Fail quietly

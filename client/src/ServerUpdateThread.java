@@ -63,10 +63,10 @@ public class ServerUpdateThread extends Thread {
 	/**
 	* Appends all new updates to the drawing canvas to the list of updates to draw
 	*
-	* @param updates LikedList of new updates to draw to canvas
+	* @param update STring of new updates to draw to canvas
 	*/
-	public synchronized void addUpdates(LinkedList<String> updates) {
-		this.updates.addAll(updates);
+	public synchronized void addUpdate(String update) {
+		this.updates.addLast(update);
 	}
 
 	/**
