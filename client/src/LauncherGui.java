@@ -192,8 +192,7 @@ public class LauncherGui extends JFrame implements MouseListener, RowSorterListe
 			
 			//adds server to the table
 			model.addRow(new Object[] {
-					serverList.get(serverList.size() - 1).getName() + " " + 
-							serverList.get(serverList.size() - 1).getIP(), isPrivate});
+					serverList.get(serverList.size() - 1).getName(), isPrivate});
 			
 		}
 		
@@ -230,9 +229,8 @@ public class LauncherGui extends JFrame implements MouseListener, RowSorterListe
 
 		@Override
 		public void mousePressed(final MouseEvent e) {
-			
-			
-			
+
+
 			//Create server button is pressed
 			if (e.getSource() == btnCreateServer) {
 				
@@ -263,6 +261,15 @@ public class LauncherGui extends JFrame implements MouseListener, RowSorterListe
 					
 					//send to server via client
 					client.sendServerInfo(server);
+
+					this.setVisible(false);
+
+					//create drawServer and connect a drawClient to it
+					client.createServer(serverIP);
+
+					this.setVisible(true);
+
+
 				}
 				
 			}
@@ -290,10 +297,13 @@ public class LauncherGui extends JFrame implements MouseListener, RowSorterListe
 								
 								//connect user to host
 								String ipToConnect = serverList.get(row).getIP();
-								
+
+								this.setVisible(false);
+
 								//Join server
-								//TODO create client object to communicate with server
-								
+								client.joinServer(ipToConnect);
+
+								this.setVisible(true);
 								
 							} else {
 								System.out.println("incorrect password");
@@ -307,11 +317,13 @@ public class LauncherGui extends JFrame implements MouseListener, RowSorterListe
 						
 						//connect user to host
 						String ipToConnect = serverList.get(row).getIP();
-						
+
+						this.setVisible(false);
+
 						//Join server
-						//TODO create client object to communicate with server
-						
-						
+						client.joinServer(ipToConnect);
+
+						this.setVisible(true);
 						
 					}
 				}

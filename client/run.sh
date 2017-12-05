@@ -1,3 +1,3 @@
 #! /bin/bash
 
-echo "Not implemented..."
+java -cp build/ Launcher

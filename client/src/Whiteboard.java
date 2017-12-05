@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -37,6 +38,11 @@ public class Whiteboard extends Observable {
 	private Color color;
 
 	/*
+	 * int for counting rainbow color position
+	 */
+	private int colorCounter;
+
+	/*
 	 * current drawing shape
 	 */
 	private String shape;
@@ -62,6 +68,11 @@ public class Whiteboard extends Observable {
 	private boolean isFilled;
 
 	/*
+	 * boolean for whether the selected object is a rainbow
+	 */
+	private boolean rainbow;
+
+	/*
 	 * minimum scale size for slider
 	 */
 	private int SCALEMIN = 10;
@@ -70,6 +81,12 @@ public class Whiteboard extends Observable {
 	 * maximum scale size for slider
 	 */
 	private int SCALEMAX = 100;
+
+	/*
+	 * color array for rainbow
+	 */
+	private Color[] colorArray = { Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue,
+			Color.magenta, Color.pink };
 
 	/*
 	 * Whiteboard class holding the DrawSpace also builds the complete frame and GUI
@@ -85,6 +102,11 @@ public class Whiteboard extends Observable {
 		 * initial color is black
 		 */
 		color = Color.black;
+
+		/*
+		 * color counter initially zero
+		 */
+		colorCounter = 0;
 
 		/*
 		 * initial shape is pen
@@ -126,7 +148,7 @@ public class Whiteboard extends Observable {
 		JButton squareButton = new JButton("Square");
 		JButton penButton = new JButton("Pen");
 		JButton eraserButton = new JButton("Eraser");
-		JButton styleButton = new JButton("Style");
+		JButton brushButton = new JButton("Brush");
 		JButton triangleButton = new JButton("Triangle");
 		JButton stampButton = new JButton("Stamp");
 
@@ -139,9 +161,11 @@ public class Whiteboard extends Observable {
 		 * create check boxes
 		 */
 		JCheckBox filledBox = new JCheckBox();
-		
+		JCheckBox rainbowBox = new JCheckBox();
+
 		filledBox.setSelected(true);
-		
+		rainbowBox.setSelected(false);
+
 		/*
 		 * setup our scale slider
 		 */
@@ -161,7 +185,7 @@ public class Whiteboard extends Observable {
 		layout.setVgap(10);
 
 		buttonPanel.setLayout(layout);
-		
+
 		/*
 		 * set the layout for the bottom panel
 		 */
@@ -181,30 +205,32 @@ public class Whiteboard extends Observable {
 		bottomPanelEast.add(scaleSlider);
 		bottomPanelEast.add(new JLabel("Fill:"));
 		bottomPanelEast.add(filledBox);
+		bottomPanelEast.add(new JLabel("Rainbow:"));
+		bottomPanelEast.add(rainbowBox);
 
 		/*
 		 * add buttons to the button panel
 		 */
 		buttonPanel.add(penButton);
-		buttonPanel.add(styleButton);
+		buttonPanel.add(brushButton);
 		buttonPanel.add(circleButton);
 		buttonPanel.add(squareButton);
 		buttonPanel.add(triangleButton);
 		buttonPanel.add(stampButton);
 		buttonPanel.add(colorButton);
 		buttonPanel.add(eraserButton);
-		
+
 		/*
 		 * add icons to buttons
 		 */
-		penButton.setIcon(new ImageIcon("../icons/pen.png"));
-		styleButton.setIcon(new ImageIcon("../icons/style.png"));
-		circleButton.setIcon(new ImageIcon("../icons/circle.png"));
-		squareButton.setIcon(new ImageIcon("../icons/square.png"));
-		triangleButton.setIcon(new ImageIcon("../icons/triangle.png"));
-		eraserButton.setIcon(new ImageIcon("../icons/eraser.png"));
-		stampButton.setIcon(new ImageIcon("../icons/stamp.png"));
-		colorButton.setIcon(new ImageIcon("../icons/palette.png"));
+		penButton.setIcon(new ImageIcon("icons/pen.png"));
+		brushButton.setIcon(new ImageIcon("icons/brush.jpg"));
+		circleButton.setIcon(new ImageIcon("icons/circle.png"));
+		squareButton.setIcon(new ImageIcon("icons/square.png"));
+		triangleButton.setIcon(new ImageIcon("icons/triangle.png"));
+		eraserButton.setIcon(new ImageIcon("icons/eraser.png"));
+		stampButton.setIcon(new ImageIcon("icons/stamp.png"));
+		colorButton.setIcon(new ImageIcon("icons/palette.png"));
 
 		/*
 		 * add the east and east portions to the bottom panel
@@ -229,7 +255,7 @@ public class Whiteboard extends Observable {
 		/*
 		 * ********** ********** mouse listeners ********** **********
 		 */
-		
+
 		/*
 		 * updates graphics upon mouse pressed
 		 */
@@ -241,15 +267,27 @@ public class Whiteboard extends Observable {
 				dragX = e.getX();
 				dragY = e.getY();
 
+				if (rainbow == true) {
+					colorCounter = 0;
+					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
+				} else {
+					colorCounter = 0;
+				}
+
+				if (colorCounter == colorArray.length - 1) {
+					colorCounter = 0;
+				}
+
 				if (graphics2D != null) {
 					drawSpace.draw(clickX, clickY, dragX, dragY, shape, scale, isFilled);
 				}
 
 				update();
+				notifyObservers(drawSpace);
 
 			}
 		});
-		
+
 		/*
 		 * ********** ********** mouse motion listeners ********** **********
 		 */
@@ -262,11 +300,26 @@ public class Whiteboard extends Observable {
 				dragX = e.getX();
 				dragY = e.getY();
 
+				if (rainbow == true) {
+					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
+				} else {
+					colorCounter = 0;
+				}
+
 				if (graphics2D != null) {
 					drawSpace.draw(clickX, clickY, dragX, dragY, shape, scale, isFilled);
 				}
 
+				if (rainbow == true) {
+					colorCounter++;
+				}
+
+				if (colorCounter == colorArray.length - 1) {
+					colorCounter = 0;
+				}
+
 				update();
+				notifyObservers(drawSpace);
 
 				clickX = e.getX();
 				clickY = e.getY();
@@ -276,7 +329,7 @@ public class Whiteboard extends Observable {
 		/*
 		 * ********** ********** action listeners ********** **********
 		 */
-		
+
 		/*
 		 * clears the screen upon client request
 		 */
@@ -287,6 +340,7 @@ public class Whiteboard extends Observable {
 				graphics2D.setPaint(Color.black);
 
 				drawSpace.update();
+				notifyObservers("clear");
 			}
 		});
 
@@ -322,6 +376,7 @@ public class Whiteboard extends Observable {
 		 */
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				notifyObservers("close");
 				System.exit(0);
 			}
 		});
@@ -338,9 +393,9 @@ public class Whiteboard extends Observable {
 		/*
 		 * change the drawing cursor to stylistic (slanted line)
 		 */
-		styleButton.addActionListener(new ActionListener() {
+		brushButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				shape = "style";
+				shape = "brush";
 			}
 		});
 
@@ -373,7 +428,7 @@ public class Whiteboard extends Observable {
 		});
 
 		/*
-		 * UNUSED
+		 * changes the drawing cursor to a triangle
 		 */
 		triangleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -395,20 +450,23 @@ public class Whiteboard extends Observable {
 		 */
 		stampButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					shape = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
-							JOptionPane.PLAIN_MESSAGE);
-				} catch (Exception exception) {
+				String input = "";
+
+				input = (String) JOptionPane.showInputDialog(frame, "Chose a word to stamp:", "Stamp Tool",
+						JOptionPane.PLAIN_MESSAGE);
+
+				if (input == null) {
 					shape = "pen";
-				}
-				
+				} else {
+					shape = input;
+				};
 			}
 		});
-		
+
 		/*
 		 * ********** ********** change listeners ********** **********
 		 */
-		
+
 		/*
 		 * changes the scale upon slider movement
 		 */
@@ -424,6 +482,15 @@ public class Whiteboard extends Observable {
 		filledBox.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				isFilled = filledBox.isSelected();
+			}
+		});
+
+		/*
+		 * changes the boolean rainbow value upon a change
+		 */
+		rainbowBox.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				rainbow = rainbowBox.isSelected();
 			}
 		});
 	}
