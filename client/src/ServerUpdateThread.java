@@ -89,7 +89,7 @@ public class ServerUpdateThread extends Thread {
 				canvas.setColor(new Color(Integer.parseInt(params[5]), Integer.parseInt(params[6]), Integer.parseInt(params[7])));
 				canvas.drawLine(Integer.parseInt(params[1]), Integer.parseInt(params[2]), Integer.parseInt(params[3]), Integer.parseInt(params[4]));
 
-			} else if (params[0].equals("style") && params.length == 8) {
+			} else if (params[0].equals("brush") && params.length == 8) {
 				//TODO brush
 				// style [/] [cX] [cY] [Scale] [Red] [Green] [Blue]
 				canvas.setColor(new Color(Integer.parseInt(params[5]), Integer.parseInt(params[6]), Integer.parseInt(params[7])));
@@ -147,26 +147,6 @@ public class ServerUpdateThread extends Thread {
 				canvas.setColor(new Color(Integer.parseInt(params[5]), Integer.parseInt(params[6]), Integer.parseInt(params[7])));
 				canvas.setFont(new Font("TimesRoman", Font.PLAIN, Integer.parseInt(params[4])));
 				canvas.drawString(params[1], Integer.parseInt(params[2]), Integer.parseInt(params[3]));
-
-			} else if (params[0].equals("resize") && params.length == 3) {
-				// resize [Width] [Height]
-				//TODO This needs to be added
-				//Create a new drawing canvas and set its size
-				JComponent newComp = (JComponent)(new Container());
-				newComp.setSize(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
-
-				// Draw the old canvas on the new canvas
-				newComp.createImage(newComp.getSize().width, newComp.getSize().height).getGraphics().drawImage(component.createImage(component.getSize().width, component.getSize().height), 0, 0, Color.WHITE, null);
-
-				// Set the new canvas
-				server.setComponent(newComp);
-
-				// Set the drawing canvas this is operating on
-				//TODO component = server.getComponent();
-				component = newComp;
-
-				// Generating the image
-				paintComponent();
 
 			} else if (params[0].equals("clear") && params.length == 1) {
 				// clear

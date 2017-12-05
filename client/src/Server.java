@@ -88,7 +88,7 @@ public class Server extends Thread {
 
 		System.out.println("Awaiting connections\n");
 		try {
-			welcomeSocket = new ServerSocket(5338);
+			welcomeSocket = new ServerSocket(5445);
 
 			// Continually wait for new connections
 			while (true) {

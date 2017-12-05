@@ -134,8 +134,6 @@ public class ServerToClientThread extends Thread{
 
 		/**
 		* Creates a SendImage extension of TimerTask to pass to the Timer
-		*
-		* @param outToClient The control connection this should send byte count to client over
 		*/
 		public SendImage() {
 			try {
@@ -168,10 +166,14 @@ public class ServerToClientThread extends Thread{
 				ImageIO.write(buff, "jpg", dataToClient);
 
 				// Notify client on number of bytes to read
-				outToClient.writeBytes(dataToClient.size() + "\n");
+				int size = dataToClient.size();
 
 				// Push all bytes to client
 				dataToClient.flush();
+
+				outToClient.writeBytes(size + "\n");
+
+				outToClient.flush();
 			} catch (Exception e) {
 				// Fail quietly
 			}

@@ -107,11 +107,18 @@ public class DrawSpace extends JComponent {
 		scale = newScale;
 	}
 
+	public void setImage(Image image) {
+		graphics2D.drawImage(image, 0, 0, null);
+	}
+
 	/*
 	 * draw method inputs: old X coord 'oX', old Y coord 'oY', current X coord 'cX',
 	 * current Y coord 'cY', shape, scale of object, and whether or not its filled
 	 */
 	public void draw(int oX, int oY, int cX, int cY, String shape, int scale, boolean filled) {
+		isFilled = filled;
+		this.shape = shape;
+		this.scale = scale;
 		/*
 		 * draw a thin pen line
 		 */

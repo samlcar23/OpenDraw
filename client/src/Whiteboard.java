@@ -495,6 +495,9 @@ public class Whiteboard extends Observable {
 		});
 	}
 
+	public void setImage(Image image) {
+		drawSpace.setImage(image);
+	}
 	/*
 	 * update graphics
 	 */

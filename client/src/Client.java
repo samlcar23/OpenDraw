@@ -1,7 +1,7 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
@@ -87,7 +87,8 @@ public class Client implements Observer {
 			if (!inFromServer.readLine().equals("200 command ok")) running = false;
 
 			// Create data connection
-			dataSocket = new Socket(host, port + 2);
+			ServerSocket welcomeSocket = new ServerSocket(port + 2);
+			dataSocket = welcomeSocket.accept();
 
 			// Set up data stream
 			dataFromServer = dataSocket.getInputStream();
@@ -115,7 +116,39 @@ public class Client implements Observer {
 	* @param arg Changes made
 	*/
 	public void update(Observable o, Object arg) {
-		
+		try {
+			if (arg instanceof String) {
+				if (((String) arg).equals("clear")) {
+					outToServer.writeBytes("clear\n");
+				}
+			}else if (arg instanceof DrawSpace) {
+				DrawSpace drawSpace = (DrawSpace) arg;
+				String shape = drawSpace.getShape();
+				int oX = drawSpace.getClicked()[0];
+				int oY = drawSpace.getClicked()[1];
+				int cX = drawSpace.getDrag()[0];
+				int cY = drawSpace.getDrag()[1];;
+				int scale = drawSpace.getScale();
+				boolean filled = drawSpace.getFilled();
+				int red = drawSpace.rgbValue()[0];
+				int green = drawSpace.rgbValue()[1];
+				int blue = drawSpace.rgbValue()[2];
+				if (shape.equals("pen")) {
+					outToServer.writeBytes("pen " + oX + " " + oY + " " + cX + " " + cY + " " + red + " " + green + " " + blue + "\n");
+				}else if (shape.equals("brush")) {
+					outToServer.writeBytes("brush / " + oX + " " + oY + " " + scale + " " + red + " " + green + " " + blue + "\n");
+				}else if (shape.equals("circle") || shape.equals("square") || shape.equals("triangle")) {
+					outToServer.writeBytes(shape + " " + oX + " " + oY + " " + scale + " " + filled + " " + red + " " + green + " " + blue + "\n");
+				}else if (shape.equals("eraser")) {
+					outToServer.writeBytes(shape + " " + oX + " " + oY + " " + scale + "\n");
+				}else {
+					outToServer.writeBytes("stamp " + shape + " " + oX + " " + oY + " " + scale + " " + red + " " + green + " " + blue + "\n");
+				}
+			}
+			outToServer.flush();
+		}catch (IOException e) {
+
+		}
 	}
 
 	/**
@@ -135,7 +168,22 @@ public class Client implements Observer {
 
 		// Continually update the image
 		while (running) {
-			
+			try {
+				while (!inFromServer.ready());
+
+				int sizeMatters = Integer.parseInt(inFromServer.readLine());
+
+				byte[] bytes = new byte[sizeMatters];
+				dataFromServer.read(bytes, 0, sizeMatters);
+
+				ImageIcon imageIcon = new ImageIcon(bytes);
+				Image image = imageIcon.getImage();
+
+				gui.setImage(image);
+
+			}catch (IOException e) {
+
+			}
 		}
 	}
 
