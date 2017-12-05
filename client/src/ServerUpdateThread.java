@@ -90,6 +90,7 @@ public class ServerUpdateThread extends Thread {
 				canvas.drawLine(Integer.parseInt(params[1]), Integer.parseInt(params[2]), Integer.parseInt(params[3]), Integer.parseInt(params[4]));
 
 			} else if (params[0].equals("style") && params.length == 8) {
+				//TODO brush
 				// style [/] [cX] [cY] [Scale] [Red] [Green] [Blue]
 				canvas.setColor(new Color(Integer.parseInt(params[5]), Integer.parseInt(params[6]), Integer.parseInt(params[7])));
 				canvas.setFont(new Font("TimesRoman", Font.PLAIN, Integer.parseInt(params[4])));

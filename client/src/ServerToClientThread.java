@@ -55,6 +55,13 @@ public class ServerToClientThread extends Thread{
 			// Notify client of connection
 			outToClient.writeBytes("200 command ok\n");
 		} catch (Exception e) {
+			// Notify client of connection failure
+			try {
+				outToClient.writeBytes("123 connection failed\n");
+			} catch (Exception ex) {
+				// Fail quietly
+			}
+
 			// Close the connection if communications cannot be established
 			quit();
 		}
