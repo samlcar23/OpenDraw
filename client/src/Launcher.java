@@ -129,6 +129,29 @@ public class Launcher {
 		
 		System.exit(0);
 	}
+
+	public void createServer(String ip){
+
+		int port = 5445;
+
+		Server server = new Server(5445);
+		server.start();
+
+		Client c = new Client(ip, port);
+		client.start();
+
+		//sends serverInfo object to server with type 1 to indicate that it should be removed
+		ServerInfo serverToDelete = new ServerInfo(null, null, ip, 1);
+		sendServerInfo(serverToDelete);
+	}
+
+	public void joinServer(String ip){
+		int port = 5445;
+
+		Client c = new Client(ip, port);
+		client.start();
+	}
+
 	
 	/*
 	 * run client
