@@ -36,7 +36,7 @@ public class Whiteboard extends Observable {
 	 * current color
 	 */
 	private Color color;
-	
+
 	/*
 	 * int for counting rainbow color position
 	 */
@@ -81,12 +81,12 @@ public class Whiteboard extends Observable {
 	 * maximum scale size for slider
 	 */
 	private int SCALEMAX = 100;
-	
+
 	/*
 	 * color array for rainbow
 	 */
-	private Color[] colorArray = {Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue,
-			Color.magenta, Color.pink};
+	private Color[] colorArray = { Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue,
+			Color.magenta, Color.pink };
 
 	/*
 	 * Whiteboard class holding the DrawSpace also builds the complete frame and GUI
@@ -102,7 +102,7 @@ public class Whiteboard extends Observable {
 		 * initial color is black
 		 */
 		color = Color.black;
-		
+
 		/*
 		 * color counter initially zero
 		 */
@@ -266,14 +266,14 @@ public class Whiteboard extends Observable {
 
 				dragX = e.getX();
 				dragY = e.getY();
-				
+
 				if (rainbow == true) {
 					colorCounter = 0;
 					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
 				} else {
 					colorCounter = 0;
 				}
-				
+
 				if (colorCounter == colorArray.length - 1) {
 					colorCounter = 0;
 				}
@@ -283,6 +283,7 @@ public class Whiteboard extends Observable {
 				}
 
 				update();
+				notifyObservers(drawSpace);
 
 			}
 		});
@@ -298,7 +299,7 @@ public class Whiteboard extends Observable {
 			public void mouseDragged(MouseEvent e) {
 				dragX = e.getX();
 				dragY = e.getY();
-				
+
 				if (rainbow == true) {
 					drawSpace.getGraphics().setColor(colorArray[colorCounter]);
 				} else {
@@ -308,16 +309,17 @@ public class Whiteboard extends Observable {
 				if (graphics2D != null) {
 					drawSpace.draw(clickX, clickY, dragX, dragY, shape, scale, isFilled);
 				}
-				
+
 				if (rainbow == true) {
 					colorCounter++;
 				}
-				
+
 				if (colorCounter == colorArray.length - 1) {
 					colorCounter = 0;
 				}
 
 				update();
+				notifyObservers(drawSpace);
 
 				clickX = e.getX();
 				clickY = e.getY();
@@ -338,6 +340,7 @@ public class Whiteboard extends Observable {
 				graphics2D.setPaint(Color.black);
 
 				drawSpace.update();
+				notifyObservers("clear");
 			}
 		});
 
@@ -373,6 +376,7 @@ public class Whiteboard extends Observable {
 		 */
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				notifyObservers("close");
 				System.exit(0);
 			}
 		});
@@ -455,7 +459,7 @@ public class Whiteboard extends Observable {
 					shape = "pen";
 				} else {
 					shape = input;
-				}
+				};
 			}
 		});
 
