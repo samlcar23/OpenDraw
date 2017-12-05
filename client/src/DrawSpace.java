@@ -30,6 +30,40 @@ public class DrawSpace extends JComponent {
 	 * scale of our drawing
 	 */
 	private int scale;
+	
+	/*
+	 * boolean for is the shape filled
+	 */
+	private boolean isFilled;
+	
+	/*
+	 * current drawing shape
+	 */
+	private String shape;
+	
+	/*
+	 * return rgb value for color
+	 */
+	public int[] rgbValue() {
+		int[] rgb = {graphics2D.getColor().getRed(), 
+				graphics2D.getColor().getGreen(),
+				graphics2D.getColor().getBlue()};
+		return rgb;
+	}
+	
+	/*
+	 * return is filled
+	 */
+	public boolean getFilled() {
+		return isFilled;
+	}
+	
+	/*
+	 * return current shape
+	 */
+	public String getShape() {
+		return shape;
+	}
 
 	/*
 	 * getter for Graphics2D
@@ -43,12 +77,6 @@ public class DrawSpace extends JComponent {
 	 */
 	public void setGraphics(Graphics2D graphicInput) {
 		graphics2D = graphicInput;
-		update();
-	}
-	
-	public void setGraphicsImage(Image imageInput) {
-		graphics2D = (Graphics2D) imageInput.getGraphics();
-		update();
 	}
 
 	/*
